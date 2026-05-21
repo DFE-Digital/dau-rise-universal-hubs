@@ -8,7 +8,7 @@ default:
     pwd:
     trusted: "Yes"
 
-pre-production:    
+staging:    
   dit:
     driver: "SQL Server"
     server: "3DCPRI-PDB16.ad.hq.dept,55916"
