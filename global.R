@@ -35,3 +35,4 @@ if (length(dup_labels) > 0) {
 }
 
 dauPortalTools::log_event("Sig Change Portal configuration loaded")
+log_event(Sys.getenv())
