@@ -44,7 +44,6 @@ server <- function(input, output, session) {
       if (identical(cleaned_role, "admin")) {
         server_rise_support_types_admin("rise_support_types")
         server_rise_actions_admin("rise_actions")
-        server_gias_change_type_admin("gias_change_type")
         dauPortalTools::server_portal_user_admin("admin")
       } else if (identical(cleaned_role, "regional_admin")) {
         server_quality_wrapper("quality", app_id = utils_get_app_id())
