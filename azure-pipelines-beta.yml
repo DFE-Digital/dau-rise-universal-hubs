@@ -24,11 +24,10 @@ extends:
     appName: RISE-Universal-Hubs-beta # this will need replacing
     environments:
     - name: Staging
-      appId: none # this will need replacing if updating an existing app pipeline
+      appId: 1084 # this will need replacing if updating an existing app pipeline
     - name: Production
       appId: none
     approvers: |
       ben7.smith@education.gov.uk
       ben.clewarth@education.gov.uk
       James.micklefield@education.gov.uk
-      
