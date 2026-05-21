@@ -1,4 +1,4 @@
-name: RISE-Universal-Hubs
+name: RISE-Universal-Hubs-beta
 
 pool:
   name: RSConnect
@@ -6,9 +6,10 @@ pool:
 trigger:
   branches:
     include:
-    - main # this needs to be either main OR master depending on what your project uses
+    - beta # this needs to be either main OR master depending on what your project uses
   paths:
     exclude:
+    - azure-pipelines-beta.yml
     - azure-pipelines.yml
 
 resources:
@@ -20,8 +21,10 @@ resources:
 extends:
   template: deploy.yml@posit-deploy
   parameters:
-    appName: RISE-Universal-Hubs # this will need replacing
+    appName: RISE-Universal-Hubs-beta # this will need replacing
     environments:
+    - name: Staging
+      appId: none # this will need replacing if updating an existing app pipeline
     - name: Production
       appId: none
     approvers: |
