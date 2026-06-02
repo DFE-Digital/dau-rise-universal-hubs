@@ -10,7 +10,7 @@ default:
 
 staging:    
   dit:
-    driver: "SQL Server"
+    driver: "sqlserver"
     server: "3DCPRI-PDB16.ad.hq.dept,55916"
     database: "Data_Insight_Team"
     uid: !expr Sys.getenv("DI_DB_UID")
