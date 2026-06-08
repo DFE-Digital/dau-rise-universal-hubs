@@ -20,10 +20,18 @@ resources:
 extends:
   template: deploy.yml@posit-deploy
   parameters:
-    appName: RISE-Universal-Hubs # this will need replacing
+    appName: RISE-Universal-Hubs 
     environments:
+    - name: Staging
+      appId: 1084
+    # Production - Beta Version
+    - name: Production
+      appId: none
+      appName: RISE-Hubs-Beta 
+    # Production - Live Version
     - name: Production
       appId: 544
+      appName: RISE-Hubs-Live
     approvers: |
       ben7.smith@education.gov.uk
       ben.clewarth@education.gov.uk
