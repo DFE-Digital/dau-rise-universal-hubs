@@ -1,4 +1,4 @@
-name: RISE-Universal-Hubs-beta
+name: RUTestNewSlot
 
 pool:
   name: RSConnect
@@ -20,7 +20,7 @@ resources:
 extends:
   template: deploy.yml@posit-deploy
   parameters:
-    appName: RISE-Universal-Hubs-beta
+    appName: RUTestNewSlot
     environments:
     - name: Pre-Production
       appId: none
