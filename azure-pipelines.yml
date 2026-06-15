@@ -22,8 +22,6 @@ extends:
   parameters:
     appName: RISE-Universal-Hubs-beta
     environments:
-    - name: Staging
-      appId: 1084
     - name: Pre-Production
       appId: none
     - name: Production
