@@ -1,4 +1,4 @@
-name: RUTestNewSlot
+name: RISE-Universal-Hubs-Live
 
 pool:
   name: RSConnect
@@ -20,12 +20,10 @@ resources:
 extends:
   template: deploy.yml@posit-deploy
   parameters:
-    appName: RUTestNewSlot
+    appName: RISE-Universal-Hubs-Live
     environments:
-    - name: Pre-Production
-      appId: none
     - name: Production
-      appId: none
+      appId: 550
     approvers: |
       ben7.smith@education.gov.uk
       ben.clewarth@education.gov.uk
