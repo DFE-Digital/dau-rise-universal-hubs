@@ -46,7 +46,7 @@ server_school_page <- function(id, selected_urn) {
     if (data) { 
       Shiny.setInputValue('",
         ns("hub_support_dblclicked"),
-        "', data[0], {priority: 'event'}); 
+        "', data[1], {priority: 'event'}); 
     }
   });
 "
@@ -84,7 +84,7 @@ server_school_page <- function(id, selected_urn) {
     if (data) { 
       Shiny.setInputValue('",
         ns("hub_lead_dblclicked"),
-        "', data[0], {priority: 'event'}); 
+        "', data[1], {priority: 'event'}); 
     }
   });
 "
