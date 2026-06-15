@@ -24,6 +24,8 @@ extends:
     environments:
     - name: Staging
       appId: 1084
+    - name: Pre-Production
+      appId: none
     - name: Production
       appId: none
     approvers: |
