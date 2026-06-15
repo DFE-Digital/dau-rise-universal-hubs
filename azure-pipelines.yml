@@ -1,4 +1,4 @@
-name: RISE-Universal-Hubs
+name: RISE-Universal-Hubs-beta
 
 pool:
   name: RSConnect
@@ -20,7 +20,7 @@ resources:
 extends:
   template: deploy.yml@posit-deploy
   parameters:
-    appName: RISE-Universal-Hubs-beta 
+    appName: RISE-Universal-Hubs-beta
     environments:
     - name: Staging
       appId: 1084
