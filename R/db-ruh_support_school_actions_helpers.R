@@ -28,8 +28,8 @@ db_ruh_get_support_school_actions <- function(
     "
     SELECT sa.[ruhsa_id], sa.[ruhs_id], sa.[ruha_id], sa.[ruhsa_date], sa.[ruhsa_comment],
            a.[ruha_name]
-    FROM [Data_Insight_Team].[01_RISE].[ruh_support_school_actions] sa
-    LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_actions] a 
+    FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_support_school_actions] sa
+    LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_actions] a 
       ON sa.[ruha_id] = a.[ruha_id]
     WHERE sa.[ruhs_id] = {as.integer(ruhs_id)}
     ORDER BY sa.[ruhsa_date] DESC, sa.[date_created] DESC;
@@ -74,7 +74,7 @@ db_ruh_add_support_school_action <- function(
 
   query <- glue_sql(
     "
-    INSERT INTO [Data_Insight_Team].[01_RISE].[ruh_support_school_actions] (
+    INSERT INTO  {utils_resolve_schema('db_schema_01r')}.[ruh_support_school_actions] (
       [ruhs_id], [ruha_id], [ruhsa_date], [ruhsa_comment], [date_created], [user_id_created]
     ) 
     OUTPUT INSERTED.[ruhsa_id]
@@ -108,7 +108,7 @@ db_ruh_update_support_school_action <- function(
 
   query <- glue_sql(
     "
-    UPDATE [Data_Insight_Team].[01_RISE].[ruh_support_school_actions]
+    UPDATE  {utils_resolve_schema('db_schema_01r')}.[ruh_support_school_actions]
     SET [ruhsa_date] = {action_date},
         [ruhsa_comment] = {comment},
         [date_edited] = SYSUTCDATETIME(),

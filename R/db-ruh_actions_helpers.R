@@ -43,10 +43,10 @@ db_ruh_get_actions <- function(
     a.[user_id_created], 
     a.[date_edited], 
     a.[user_id_edited]
-  FROM [Data_Insight_Team].[01_RISE].[ruh_actions] a
-  LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_hubs] h 
+  FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_actions] a
+  LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_hubs] h 
     ON a.[ruhb_id] = h.[ruhb_id]
-  LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_support_types] t 
+  LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_support_types] t 
     ON a.[ruht_id] = t.[ruht_id]
   {action_filter};
   ",
@@ -101,7 +101,7 @@ db_ruh_add_action <- function(
 
   query <- glue_sql(
     "
-    INSERT INTO [Data_Insight_Team].[01_RISE].[ruh_actions] (
+    INSERT INTO  {utils_resolve_schema('db_schema_01r')}.[ruh_actions] (
       [ruhb_id], 
       [ruht_id], 
       [ruha_name], 
@@ -147,7 +147,7 @@ db_ruh_update_action <- function(
 
   query <- glue_sql(
     "
-    UPDATE [Data_Insight_Team].[01_RISE].[ruh_actions]
+    UPDATE {utils_resolve_schema('db_schema_01r')}.[ruh_actions]
     SET [ruhb_id] = {hub_id},
         [ruht_id] = {ruht_id},
         [ruha_name] = {action_name}, 

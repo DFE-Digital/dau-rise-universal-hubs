@@ -46,10 +46,10 @@ db_ruh_get_support_schools <- function(
            s.[date_created], s.[user_id_created], s.[date_edited], s.[user_id_edited],
            h.[ruhb_name], 
            t.[ruht_name]
-    FROM [Data_Insight_Team].[01_RISE].[ruh_support_schools] s
-    LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_hubs] h 
+    FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_support_schools] s
+    LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_hubs] h 
       ON s.[ruhb_id] = h.[ruhb_id]
-    LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_support_types] t 
+    LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_support_types] t 
       ON s.[ruht_id] = t.[ruht_id]
     {where_clause};
     ",
@@ -96,7 +96,7 @@ db_ruh_add_blank_support_school <- function(
 
   query <- glue_sql(
     "
-    INSERT INTO [Data_Insight_Team].[01_RISE].[ruh_support_schools] (
+    INSERT INTO  {utils_resolve_schema('db_schema_01r')}.[ruh_support_schools] (
       [ruhl_id], [ruhb_id], [ruht_id], [ruhs_urn], 
       [ruhs_dateactive], [ruhs_active], [ruhs_comment], [date_created], [user_id_created]
     ) 
@@ -162,7 +162,7 @@ db_ruh_update_support_school <- function(
 
   query <- glue_sql(
     "
-    UPDATE [Data_Insight_Team].[01_RISE].[ruh_support_schools]
+    UPDATE  {utils_resolve_schema('db_schema_01r')}.[ruh_support_schools]
     SET 
       [ruhl_id]           = {lead_val},
       [ruhb_id]           = {as.integer(hub_id)},
@@ -196,7 +196,7 @@ db_get_hub_support_urns <- function(db_get_query = utils_db_get_query) {
   )
 
   query <- glue_sql(
-    "SELECT DISTINCT [ruhs_urn] AS URN FROM [Data_Insight_Team].[01_RISE].[ruh_support_schools];",
+    "SELECT DISTINCT [ruhs_urn] AS URN FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_support_schools];",
     .con = conn
   )
   db_get_query(conn, query)

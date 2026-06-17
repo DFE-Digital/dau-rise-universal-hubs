@@ -29,7 +29,7 @@ db_ruh_get_hubs <- function(hub_id = NULL, db_get_query = utils_db_get_query) {
   query <- glue_sql(
     "
     SELECT [ruhb_id], [ruhb_name], [date_created], [user_id_created], [date_edited], [user_id_edited]
-    FROM [Data_Insight_Team].[01_RISE].[ruh_hubs]
+    FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_hubs]
     {hub_filter};
   ",
     .con = conn
@@ -62,7 +62,7 @@ db_ruh_add_hub <- function(
 
   query <- glue_sql(
     "
-    INSERT INTO [Data_Insight_Team].[01_RISE].[ruh_hubs] (
+    INSERT INTO  {utils_resolve_schema('db_schema_01r')}.[ruh_hubs] (
       [ruhb_name],
       [user_id_created],
       [date_created]
@@ -109,12 +109,12 @@ db_ruh_get_hub_summary <- function(db_get_query = utils_db_get_query) {
         COUNT(DISTINCT CASE WHEN s.[ruhs_active] = 1 THEN s.[ruhs_urn] END) AS schools_supported_active,
         COUNT(DISTINCT CASE WHEN l.[ruhl_active] = 1 THEN l.[ruhl_urn] END) AS lead_schools_active,
         COUNT(DISTINCT t.[ruht_id]) AS support_types_count
-    FROM [Data_Insight_Team].[01_RISE].[ruh_hubs] h
-    LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_support_schools] s 
+    FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_hubs] h
+    LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_support_schools] s 
         ON h.[ruhb_id] = s.[ruhb_id]
-    LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_lead_schools] l
+    LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_lead_schools] l
         ON h.[ruhb_id] = l.[ruhb_id]
-    LEFT JOIN [Data_Insight_Team].[01_RISE].[ruh_support_types] t
+    LEFT JOIN  {utils_resolve_schema('db_schema_01r')}.[ruh_support_types] t
         ON h.[ruhb_id] = t.[ruhb_id]
     GROUP BY 
         h.[ruhb_id], 
@@ -134,7 +134,7 @@ db_ruh_update_hub <- function(hub_id, hub_name, user_id) {
   on.exit(try(DBI::dbDisconnect(conn), silent = TRUE))
 
   query <- glue_sql(
-    "UPDATE [Data_Insight_Team].[01_RISE].[ruh_hubs]
+    "UPDATE  {utils_resolve_schema('db_schema_01r')}.[ruh_hubs]
      SET [ruhb_name] = {hub_name},
          [date_edited] = GETDATE(),
          [user_id_edited] = {user_id}

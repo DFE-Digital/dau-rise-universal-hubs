@@ -16,7 +16,7 @@ db_ruh_get_support_types <- function(
   query <- glue_sql(
     "
     SELECT [ruht_id], [ruhb_id], [ruht_name], [ruht_description]
-    FROM [Data_Insight_Team].[01_RISE].[ruh_support_types]
+    FROM  {utils_resolve_schema('db_schema_01r')}.[ruh_support_types]
     {where_clause}
     ORDER BY [ruhb_id] ASC, [ruht_name] ASC;
   ",
@@ -39,7 +39,7 @@ db_ruh_add_support_type <- function(
 
   query <- glue_sql(
     "
-    INSERT INTO [Data_Insight_Team].[01_RISE].[ruh_support_types] (
+    INSERT INTO  {utils_resolve_schema('db_schema_01r')}.[ruh_support_types] (
       [ruhb_id], [ruht_name], [ruht_description], [date_created], [user_id_created]
     ) 
     OUTPUT INSERTED.[ruht_id]
@@ -66,7 +66,7 @@ db_ruh_update_support_type <- function(
 
   query <- glue_sql(
     "
-    UPDATE [Data_Insight_Team].[01_RISE].[ruh_support_types]
+    UPDATE  {utils_resolve_schema('db_schema_01r')}.[ruh_support_types]
     SET [ruht_name] = {name}, 
         [ruht_description] = {description}, 
         [ruhb_id] = {hub_id},
