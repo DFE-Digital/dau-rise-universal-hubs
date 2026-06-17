@@ -1226,7 +1226,7 @@
     },
     "dauPortalTools": {
       "Package": "dauPortalTools",
-      "Version": "2026.5.0",
+      "Version": "2026.6.0",
       "Source": "GitHub",
       "Title": "Data Analysis Unit Portal Tools",
       "Authors@R": "c(person(\"Ben\",\"Smith\",email=\"ben7.smith@education.gov.uk\",role=c(\"aut\",\"cre\")), person(\"Ben\",\"Clewarth\",email=\"ben.clewarth@education.gov.uk\",role=\"aut\"), person(\"Mark\",\"Horton\",email=\"mark.horton@education.gov.uk\",role=\"aut\"))",
@@ -1265,7 +1265,7 @@
       "RemoteUsername": "dfe-digital",
       "RemoteRepo": "dauPortalTools",
       "RemoteRef": "main",
-      "RemoteSha": "f0cdd41d6c25559df0e736e6531dbfaf2fee057c",
+      "RemoteSha": "cab576bc84f7b3e8b2b197070b312588bf215007",
       "RemoteHost": "api.github.com"
     },
     "desc": {

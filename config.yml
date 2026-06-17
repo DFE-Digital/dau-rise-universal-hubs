@@ -17,6 +17,15 @@ default:
     db_schema_02s: "[02_Single]"
     db_schema_01r: "[01_RISE_b]"
 
+  app_details:
+    app_id: 11
+  
+  logging:
+    enabled: true
+    debug_toggle: true
+    event_log_path: "logs/events.log"
+    summary_log_dir: "logs/summaries"
+    log_to_console: true
 
 staging:    
   dit:
@@ -35,6 +44,15 @@ staging:
     db_schema_02s: "[02_Single]"
     db_schema_01r: "[01_RISE_b]"
 
+  app_details:
+    app_id: 11
+  
+  logging:
+    enabled: true
+    debug_toggle: true
+    event_log_path: "logs/events.log"
+    summary_log_dir: "logs/summaries"
+    log_to_console: true
 production_beta:    
   dit:
     driver: "ODBC Driver 17 for SQL Server"
@@ -52,6 +70,15 @@ production_beta:
     db_schema_02s: "[02_Single]"
     db_schema_01r: "[01_RISE_b]"
 
+  app_details:
+    app_id: 11
+  
+  logging:
+    enabled: true
+    debug_toggle: true
+    event_log_path: "logs/events.log"
+    summary_log_dir: "logs/summaries"
+    log_to_console: true
 production:    
   dit:
     driver: "ODBC Driver 17 for SQL Server"
@@ -69,12 +96,12 @@ production:
     db_schema_02s: "[02_Single]"
     db_schema_01r: "[01_RISE]"
 
-app_details:
-  app_id: 11
+  app_details:
+    app_id: 11
   
-logging:
-  enabled: true
-  debug_toggle: true
-  event_log_path: "logs/events.log"
-  summary_log_dir: "logs/summaries"
-  log_to_console: true
+  logging:
+    enabled: true
+    debug_toggle: true
+    event_log_path: "logs/events.log"
+    summary_log_dir: "logs/summaries"
+    log_to_console: true
