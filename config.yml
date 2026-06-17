@@ -7,6 +7,16 @@ default:
     uid:
     pwd:
     trusted: "Yes"
+    db_name: "[Data_Insight_Team]"
+
+  schemas:
+    db_schema_00c: "[00_Core]"
+    db_schema_01a: "[01_AIDT]"
+    db_schema_01sc: "[01_sigchange]"
+    db_schema_01sr: "[01_SSSR]"
+    db_schema_02s: "[02_Single]"
+    db_schema_01r: "[01_RISE_b]"
+
 
 staging:    
   dit:
@@ -16,7 +26,32 @@ staging:
     uid: !expr Sys.getenv("DI_DB_UID")
     pwd: !expr Sys.getenv("DI_DB_PWD")
     trusted: "No"
-    
+
+  schemas:
+    db_schema_00c: "[00_Core]"
+    db_schema_01a: "[01_AIDT]"
+    db_schema_01sc: "[01_sigchange]"
+    db_schema_01sr: "[01_SSSR]"
+    db_schema_02s: "[02_Single]"
+    db_schema_01r: "[01_RISE_b]"
+
+production_beta:    
+  dit:
+    driver: "ODBC Driver 17 for SQL Server"
+    server: "3DCPRI-PDB16.ad.hq.dept,55916"
+    database: "Data_Insight_Team"
+    uid: !expr Sys.getenv("DI_DB_UID")
+    pwd: !expr Sys.getenv("DI_DB_PWD")
+    trusted: "No"
+
+  schemas:
+    db_schema_00c: "[00_Core]"
+    db_schema_01a: "[01_AIDT]"
+    db_schema_01sc: "[01_sigchange]"
+    db_schema_01sr: "[01_SSSR]"
+    db_schema_02s: "[02_Single]"
+    db_schema_01r: "[01_RISE_b]"
+
 production:    
   dit:
     driver: "ODBC Driver 17 for SQL Server"
@@ -26,15 +61,14 @@ production:
     pwd: !expr Sys.getenv("DI_DB_PWD")
     trusted: "No"
 
-db_name: "[Data_Insight_Team]"
+  schemas:
+    db_schema_00c: "[00_Core]"
+    db_schema_01a: "[01_AIDT]"
+    db_schema_01sc: "[01_sigchange]"
+    db_schema_01sr: "[01_SSSR]"
+    db_schema_02s: "[02_Single]"
+    db_schema_01r: "[01_RISE]"
 
-schemas:
-  db_schema_00c: "[00_Core]"
-  db_schema_01a: "[01_AIDT]"
-  db_schema_01sc: "[01_sigchange]"
-  db_schema_01sr: "[01_SSSR]"
-  db_schema_02s: "[02_Single]"
-    
 app_details:
   app_id: 11
   
