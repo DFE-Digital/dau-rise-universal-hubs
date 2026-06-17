@@ -1217,7 +1217,7 @@
       "description": {
         "Package": "dauPortalTools",
         "Title": "Data Analysis Unit Portal Tools",
-        "Version": "2026.5.0",
+        "Version": "2026.6.0",
         "Authors@R": "c(person(\"Ben\",\"Smith\",email=\"ben7.smith@education.gov.uk\",role=c(\"aut\",\"cre\")),\n             person(\"Ben\",\"Clewarth\",email=\"ben.clewarth@education.gov.uk\",role=\"aut\"),\n             person(\"Mark\",\"Horton\",email=\"mark.horton@education.gov.uk\",role=\"aut\"))",
         "Description": "Utility functions and UI components for RG DAUs Portals.",
         "License": "Proprietary",
@@ -1228,19 +1228,19 @@
         "Suggests": "RSQLite,\ntestthat",
         "Author": "Ben Smith [aut, cre],\n  Ben Clewarth [aut],\n  Mark Horton [aut]",
         "Maintainer": "Ben Smith <ben7.smith@education.gov.uk>",
-        "Built": "R 4.5.3; ; 2026-05-13 12:40:13 UTC; windows",
+        "Built": "R 4.5.3; ; 2026-06-17 16:44:07 UTC; windows",
         "RemoteType": "github",
         "Remotes": "dfe-analytical-services/shinyGovstyle",
         "RemoteUsername": "dfe-digital",
         "RemoteRepo": "dauPortalTools",
         "RemoteRef": "main",
-        "RemoteSha": "f0cdd41d6c25559df0e736e6531dbfaf2fee057c",
+        "RemoteSha": "cab576bc84f7b3e8b2b197070b312588bf215007",
         "RemoteHost": "api.github.com",
         "GithubHost": "api.github.com",
         "GithubRepo": "dauPortalTools",
         "GithubUsername": "dfe-digital",
         "GithubRef": "main",
-        "GithubSHA1": "f0cdd41d6c25559df0e736e6531dbfaf2fee057c"
+        "GithubSHA1": "cab576bc84f7b3e8b2b197070b312588bf215007"
       }
     },
     "desc": {
@@ -4697,7 +4697,7 @@
   },
   "files": {
     ".Rprofile": {
-      "checksum": "b3d054d3d6a557425029146e9a9d8676"
+      "checksum": "a6c01385b8df864d171c1ff59b477070"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4850,7 +4850,7 @@
       "checksum": "fcf47297a3619928bfe5e50324e82d9b"
     },
     "renv.lock": {
-      "checksum": "c8e9008a664b757622ceacb66962d68c"
+      "checksum": "9f6dc90f156596a1ecc35b7cbda4e851"
     },
     "server.R": {
       "checksum": "c239e965f2191ebedb7843d543780106"
