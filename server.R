@@ -342,7 +342,7 @@ server <- function(input, output, session) {
         if (data) {
           Shiny.setInputValue(
             'hub_dblclicked', 
-            data[1], 
+            data[0], 
             {priority: 'event'}
           );
         }
