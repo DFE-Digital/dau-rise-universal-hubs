@@ -97,7 +97,7 @@ server_hub_support_page <- function(id, selected_support_id) {
     })
 
     observeEvent(input$back_to_school, {
-      selected_support_id(NULL)
+      updateNavbarPage(session, "main_navbar", selected = "school_overview")
     })
 
     output$actions_table <- DT::renderDT({
