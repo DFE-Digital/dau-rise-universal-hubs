@@ -412,13 +412,13 @@ server <- function(input, output, session) {
 
     selected_hub(hub_id_val)
 
-    bslib::nav_select("main_navbar", "hub_overview")
+    updateNavbarPage(session, "main_navbar", selected = "hub_overview")
   })
 
   server_hub_overview("hub_overview_module", selected_hub, selected_urn)
 
   observeEvent(input[["hub_overview_module-hub_school_dblclicked"]], {
-    bslib::nav_select("main_navbar", "school_overview")
+    updateNavbarPage(session, "main_navbar", selected = "school_overview")
   })
   # ------------------------------------------------------------------
   # User Profile
