@@ -67,7 +67,7 @@ server_hub_lead_page <- function(id, selected_lead_id) {
     })
 
     observeEvent(input$back_to_school, {
-      selected_lead_id(NULL)
+      updateNavbarPage(session, "main_navbar", selected = "school_overview")
     })
 
     observeEvent(input$save_lead, {
