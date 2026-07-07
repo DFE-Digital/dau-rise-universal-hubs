@@ -1228,19 +1228,19 @@
         "Suggests": "RSQLite,\ntestthat",
         "Author": "Ben Smith [aut, cre],\n  Ben Clewarth [aut],\n  Mark Horton [aut]",
         "Maintainer": "Ben Smith <ben7.smith@education.gov.uk>",
-        "Built": "R 4.5.3; ; 2026-07-07 11:49:11 UTC; windows",
+        "Built": "R 4.5.3; ; 2026-07-07 12:03:07 UTC; windows",
         "RemoteType": "github",
         "Remotes": "dfe-analytical-services/shinyGovstyle",
         "RemoteUsername": "dfe-digital",
         "RemoteRepo": "dauPortalTools",
         "RemoteRef": "main",
-        "RemoteSha": "441516ae1d8560ff9693fa6600be9333ab310842",
+        "RemoteSha": "79d2c31bac4fd28c783cd2c59c220a5368481f26",
         "RemoteHost": "api.github.com",
         "GithubHost": "api.github.com",
         "GithubRepo": "dauPortalTools",
         "GithubUsername": "dfe-digital",
         "GithubRef": "main",
-        "GithubSHA1": "441516ae1d8560ff9693fa6600be9333ab310842"
+        "GithubSHA1": "79d2c31bac4fd28c783cd2c59c220a5368481f26"
       }
     },
     "desc": {
@@ -4697,7 +4697,7 @@
   },
   "files": {
     ".Rprofile": {
-      "checksum": "526ab8e3992fa791592c4b1927418e4f"
+      "checksum": "827a3bf61d57cad2465099e3080ca17a"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4709,13 +4709,16 @@
       "checksum": "b6ba2a889fe55237f2bf7a932b0f9946"
     },
     "config.yml": {
-      "checksum": "ea28c0b2dc1019636287b5e9e9c049bb"
+      "checksum": "b68a03b0c7b612d2b42460366524cf38"
     },
     "global.R": {
       "checksum": "e146ea3465ea5ddc263be36022c1fea5"
     },
     "libraries.R": {
       "checksum": "ba2a78ee4940fb25a78a26bf90237f99"
+    },
+    "logs/events.log": {
+      "checksum": "433cb171c7d4f6341f9367aaede30950"
     },
     "R/db-get_quality_data.R": {
       "checksum": "350561b2b00ec674ea56fbed968ba7fc"
@@ -4754,7 +4757,7 @@
       "checksum": "26e4551031940ac9d51cd5a975cac101"
     },
     "R/server-event_instance_page.R": {
-      "checksum": "c15f5cacd4a0defb1b443abcd1f7c4b7"
+      "checksum": "5ec8522ed6af2d2fac2e03944cd9a18c"
     },
     "R/server-event_page.R": {
       "checksum": "7b130e6a7374118afcf20f50f575af80"
