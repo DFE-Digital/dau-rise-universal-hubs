@@ -106,9 +106,13 @@ server <- function(input, output, session) {
   # Service Navigation Link Interceptors
   # ------------------------------------------------------------------
   output$dynamic_gds_service_navigation <- renderUI({
-    req(user_role())
+    current_role <- user_role()
 
-    nav_links <- build_service_nav_links(user_role())
+    nav_links <- if (!is.null(current_role)) {
+      build_service_nav_links(current_role)
+    } else {
+      build_service_nav_links("user")
+    }
 
     shinyGovstyle::service_navigation(
       service_name = "",
