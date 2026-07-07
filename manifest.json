@@ -4697,7 +4697,7 @@
   },
   "files": {
     ".Rprofile": {
-      "checksum": "e4f682af10cba17f4541d5ff2d3b2279"
+      "checksum": "82b2b93118974024a7b76ec3bee54e31"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4716,9 +4716,6 @@
     },
     "libraries.R": {
       "checksum": "ba2a78ee4940fb25a78a26bf90237f99"
-    },
-    "logs/events.log": {
-      "checksum": "433cb171c7d4f6341f9367aaede30950"
     },
     "R/db-get_quality_data.R": {
       "checksum": "350561b2b00ec674ea56fbed968ba7fc"
