@@ -1,21 +1,13 @@
-default:
-  emulate_user: bsmith7
-  dit:
-    driver: "ODBC Driver 13 for SQL Server"
-    server: "3DCPRI-PDB16\\ACSQLS,55916"
-    database: "Data_Insight_Team"
-    uid:
-    pwd:
-    trusted: "Yes"
-    db_name: "[Data_Insight_Team]"
-
+global:
+  emulate_user: "bsmith7"
+  
   schemas:
     db_schema_00c: "[00_Core]"
     db_schema_01a: "[01_AIDT]"
     db_schema_01sc: "[01_sigchange]"
     db_schema_01sr: "[01_SSSR]"
     db_schema_02s: "[02_Single]"
-    db_schema_01r: "[01_RISE_b]"
+    db_schema_01r: "[01_RISE_b]" 
 
   app_details:
     app_id: 11
@@ -26,6 +18,16 @@ default:
     event_log_path: "logs/events.log"
     summary_log_dir: "logs/summaries"
     log_to_console: true
+
+default:
+  dit:
+    driver: "ODBC Driver 13 for SQL Server"
+    server: "3DCPRI-PDB16\\ACSQLS,55916"
+    database: "Data_Insight_Team"
+    uid: null
+    pwd: null
+    trusted: "Yes"
+    db_name: "[Data_Insight_Team]"
 
 staging:    
   dit:
@@ -36,24 +38,6 @@ staging:
     pwd: !expr Sys.getenv("DI_DB_PWD")
     trusted: "No"
 
-  schemas:
-    db_schema_00c: "[00_Core]"
-    db_schema_01a: "[01_AIDT]"
-    db_schema_01sc: "[01_sigchange]"
-    db_schema_01sr: "[01_SSSR]"
-    db_schema_02s: "[02_Single]"
-    db_schema_01r: "[01_RISE_b]"
-
-  app_details:
-    app_id: 11
-  
-  logging:
-    enabled: true
-    debug_toggle: true
-    event_log_path: "logs/events.log"
-    summary_log_dir: "logs/summaries"
-    log_to_console: true
-    
 production_beta:    
   dit:
     driver: "ODBC Driver 17 for SQL Server"
@@ -63,25 +47,7 @@ production_beta:
     pwd: !expr Sys.getenv("DI_DB_PWD")
     trusted: "No"
 
-  schemas:
-    db_schema_00c: "[00_Core]"
-    db_schema_01a: "[01_AIDT]"
-    db_schema_01sc: "[01_sigchange]"
-    db_schema_01sr: "[01_SSSR]"
-    db_schema_02s: "[02_Single]"
-    db_schema_01r: "[01_RISE_b]"
-
-  app_details:
-    app_id: 11
-  
-  logging:
-    enabled: true
-    debug_toggle: true
-    event_log_path: "logs/events.log"
-    summary_log_dir: "logs/summaries"
-    log_to_console: true
-
-production:
+production:    
   dit:
     driver: "ODBC Driver 17 for SQL Server"
     server: "3DCPRI-PDB16.ad.hq.dept,55916"
@@ -89,21 +55,5 @@ production:
     uid: !expr Sys.getenv("DI_DB_UID")
     pwd: !expr Sys.getenv("DI_DB_PWD")
     trusted: "No"
-
   schemas:
-    db_schema_00c: "[00_Core]"
-    db_schema_01a: "[01_AIDT]"
-    db_schema_01sc: "[01_sigchange]"
-    db_schema_01sr: "[01_SSSR]"
-    db_schema_02s: "[02_Single]"
     db_schema_01r: "[01_RISE]"
-
-  app_details:
-    app_id: 11
-  
-  logging:
-    enabled: true
-    debug_toggle: true
-    event_log_path: "logs/events.log"
-    summary_log_dir: "logs/summaries"
-    log_to_console: true
