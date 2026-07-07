@@ -1265,7 +1265,7 @@
       "RemoteUsername": "dfe-digital",
       "RemoteRepo": "dauPortalTools",
       "RemoteRef": "main",
-      "RemoteSha": "441516ae1d8560ff9693fa6600be9333ab310842",
+      "RemoteSha": "79d2c31bac4fd28c783cd2c59c220a5368481f26",
       "RemoteHost": "api.github.com"
     },
     "desc": {
