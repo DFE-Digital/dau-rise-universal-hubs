@@ -62,8 +62,8 @@ server_event_instance_page <- function(id, selected_event_id) {
 
       query <- glue::glue_sql(
         "SELECT ex.[rueae_id], act.[rueva_name], ex.[rueae_date], ex.[rueae_comment]
-         FROM [01_RISE_b].[ru_event_action_executions] ex
-         INNER JOIN [01_RISE_b].[ru_event_actions] act ON ex.[rueva_id] = act.[rueva_id]
+         FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_action_executions] ex
+         INNER JOIN {utils_resolve_schema('db_schema_01r')}.[ru_event_actions] act ON ex.[rueva_id] = act.[rueva_id]
          WHERE ex.[ruev_id] = {as.integer(selected_event_id())}
          ORDER BY ex.[rueae_date] DESC, ex.[date_created] DESC;",
         .con = conn
@@ -213,7 +213,7 @@ server_event_instance_page <- function(id, selected_event_id) {
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
       query <- glue::glue_sql(
-        "UPDATE [01_RISE_b].[ru_events]
+        "UPDATE {utils_resolve_schema('db_schema_01r')}.[ru_events]
          SET [ruevt_id]           = {as.integer(input$modal_evt_type_id)},
              [ruesv_id]           = {as.integer(input$modal_evt_sub_id)},
              [ruev_date]          = {format(as.Date(input$modal_evt_date), '%Y-%m-%d')},
@@ -422,7 +422,7 @@ server_event_instance_page <- function(id, selected_event_id) {
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
       query <- glue::glue_sql(
-        "INSERT INTO [01_RISE_b].[ru_event_action_executions] ([ruev_id], [rueva_id], [rueae_date], [rueae_comment], [user_id_created])
+        "INSERT INTO {utils_resolve_schema('db_schema_01r')}.[ru_event_action_executions] ([ruev_id], [rueva_id], [rueae_date], [rueae_comment], [user_id_created])
          VALUES ({as.integer(selected_event_id())}, {as.integer(input$modal_exec_action_id)}, {format(as.Date(input$modal_exec_date), '%Y-%m-%d')}, {final_comment_entry}, {dauPortalTools::get_user(session)});",
         .con = conn
       )
@@ -444,8 +444,8 @@ server_event_instance_page <- function(id, selected_event_id) {
 
       query <- glue::glue_sql(
         "SELECT ex.[rueae_id], ex.[rueva_id], ex.[rueae_date], ex.[rueae_comment], act.[rueva_name], act.[rueva_description], act.[rueva_rule_type]
-         FROM [01_RISE_b].[ru_event_action_executions] ex
-         INNER JOIN [01_RISE_b].[ru_event_actions] act ON ex.[rueva_id] = act.[rueva_id]
+         FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_action_executions] ex
+         INNER JOIN {utils_resolve_schema('db_schema_01r')}.[ru_event_actions] act ON ex.[rueva_id] = act.[rueva_id]
          WHERE ex.[rueae_id] = {row_id};",
         .con = conn
       )
@@ -627,7 +627,7 @@ server_event_instance_page <- function(id, selected_event_id) {
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
       query <- glue::glue_sql(
-        "UPDATE [01_RISE_b].[ru_event_action_executions]
+        "UPDATE {utils_resolve_schema('db_schema_01r')}.[ru_event_action_executions]
          SET [rueva_id]       = {action_id},
              [rueae_date]     = {format(as.Date(input$modal_edit_date), '%Y-%m-%d')},
              [rueae_comment]  = {final_comment_entry},
