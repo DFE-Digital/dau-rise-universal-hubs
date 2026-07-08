@@ -1217,7 +1217,7 @@
       "description": {
         "Package": "dauPortalTools",
         "Title": "Data Analysis Unit Portal Tools",
-        "Version": "2026.6.0",
+        "Version": "2026.7.0",
         "Authors@R": "c(person(\"Ben\",\"Smith\",email=\"ben7.smith@education.gov.uk\",role=c(\"aut\",\"cre\")),\n             person(\"Ben\",\"Clewarth\",email=\"ben.clewarth@education.gov.uk\",role=\"aut\"),\n             person(\"Mark\",\"Horton\",email=\"mark.horton@education.gov.uk\",role=\"aut\"))",
         "Description": "Utility functions and UI components for RG DAUs Portals.",
         "License": "Proprietary",
@@ -1228,19 +1228,19 @@
         "Suggests": "RSQLite,\ntestthat",
         "Author": "Ben Smith [aut, cre],\n  Ben Clewarth [aut],\n  Mark Horton [aut]",
         "Maintainer": "Ben Smith <ben7.smith@education.gov.uk>",
-        "Built": "R 4.5.3; ; 2026-07-07 12:03:07 UTC; windows",
+        "Built": "R 4.5.3; ; 2026-07-08 09:03:49 UTC; windows",
         "RemoteType": "github",
         "Remotes": "dfe-analytical-services/shinyGovstyle",
+        "RemoteHost": "api.github.com",
         "RemoteUsername": "dfe-digital",
         "RemoteRepo": "dauPortalTools",
         "RemoteRef": "main",
-        "RemoteSha": "79d2c31bac4fd28c783cd2c59c220a5368481f26",
-        "RemoteHost": "api.github.com",
+        "RemoteSha": "f82de92da2b9768ba56dec4ef57d31e22e977f94",
         "GithubHost": "api.github.com",
         "GithubRepo": "dauPortalTools",
         "GithubUsername": "dfe-digital",
         "GithubRef": "main",
-        "GithubSHA1": "79d2c31bac4fd28c783cd2c59c220a5368481f26"
+        "GithubSHA1": "f82de92da2b9768ba56dec4ef57d31e22e977f94"
       }
     },
     "desc": {
@@ -4697,7 +4697,10 @@
   },
   "files": {
     ".Rprofile": {
-      "checksum": "a6f03ec6100aa604bcc59dbda69c9469"
+      "checksum": "b5ad07424911608f08fef8a27f808dd5"
+    },
+    ".vscode/launch.json": {
+      "checksum": "8799f3582b7bab5f4fd39bc454c02787"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4862,7 +4865,7 @@
       "checksum": "fcf47297a3619928bfe5e50324e82d9b"
     },
     "renv.lock": {
-      "checksum": "c503dd73d8004db044c4028555342570"
+      "checksum": "64aa9e17ff0dae2c9e2d9e70024d1f86"
     },
     "server.R": {
       "checksum": "4b8e7339c1fc4e41856fd001ecc5a16a"
