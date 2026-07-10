@@ -1,7 +1,8 @@
 server <- function(input, output, session) {
-  # ------------------------------------------------------------------
-  # Session Identity & Security
-  # ------------------------------------------------------------------
+  # =================================================================================
+  # 1. SESSION IDENTITY, SECURITY & AUDIT
+  # =================================================================================
+
   user <- reactiveVal(NULL)
   user_role <- reactiveVal(NULL)
 
@@ -22,92 +23,59 @@ server <- function(input, output, session) {
     once = TRUE
   )
 
-  # ------------------------------------------------------------------
-  # Dynamic Navigation Menu
-  # ------------------------------------------------------------------
+  # =================================================================================
+  # 2. SHARED POLYMORPHIC STATE TRACKING
+  # =================================================================================
+
+  active_target <- reactiveValues(
+    id = NULL,
+    type = "School",
+    name = NULL
+  )
+
+  selected_sigchange <- reactiveVal(NULL)
+  original_record <- reactiveVal(NULL)
+  selected_support_id <- reactiveVal(NULL)
+  selected_lead_id <- reactiveVal(NULL)
+  selected_event_id_token <- reactiveVal(NULL)
+
+  # =================================================================================
+  # 3. DEEP LINK PARSER ENGINE
+  # =================================================================================
+
+  observeEvent(session$clientData$url_search, {
+    query <- parseQueryString(session$clientData$url_search)
+    req(query$scid, sigchange_data())
+
+    sig_id <- suppressWarnings(as.integer(query$scid))
+    req(!is.na(sig_id))
+
+    sc <- dplyr::filter(sigchange_data(), sig_change_id == sig_id)
+    req(nrow(sc) == 1)
+
+    row <- sc[1, , drop = FALSE]
+    selected_sigchange(as.list(row))
+    original_record(as.list(row))
+
+    active_target$id <- as.integer(sc$URN)
+    active_target$type <- "School"
+    active_target$name <- as.character(sc$schoolname)
+
+    updateNavbarPage(session, "main_navbar", selected = "sigchange")
+  })
+
+  # =================================================================================
+  # 4. CORE APPLICATION NAVIGATION BAR INTERCEPTORS (BSLIB ROUTING)
+  # =================================================================================
+
+  # Structural Layout Handlers (Delegated to external utility files)
   output$admin_side_nav_container <- renderUI({
     req(user_role())
-    role <- tolower(trimws(user_role()))
-
-    side_nav_styles <- tags$style(HTML(
-      "
-      .gds-side-nav-item {
-        padding: 12px 15px !important;
-        border-bottom: 1px solid #b1b4b6 !important;
-        list-style-type: none !important;
-        margin: 0 !important;
-      }
-      .gds-side-nav-link {
-        font-weight: bold !important;
-        text-decoration: none !important;
-        color: #1d70b8 !important;
-        display: block !important;
-        width: 100% !important;
-      }
-      .gds-side-nav-link:hover {
-        color: #003078 !important;
-        text-decoration: underline !important;
-      }
-    "
-    ))
-
-    dashboard_home_link <- tags$li(
-      class = "gds-side-nav-item",
-      style = "border-bottom: 3px solid #1d70b8 !important; margin-bottom: 15px !important; background: #ffffff;",
-      shiny::actionLink(
-        "side_nav_console_home",
-        "💻 Console Overview",
-        class = "gds-side-nav-link",
-        style = "color: #1d70b8 !important;"
-      )
-    )
-
-    menu_list <- if (role == "admin") {
-      tags$ul(
-        style = "padding-left: 0; margin: 0; list-style-type: none;",
-        dashboard_home_link,
-        tags$li(
-          class = "gds-side-nav-item",
-          shiny::actionLink(
-            "side_nav_sup_types",
-            "📁 RISE Support Types",
-            class = "gds-side-nav-link"
-          )
-        ),
-        tags$li(
-          class = "gds-side-nav-item",
-          shiny::actionLink(
-            "side_nav_actions",
-            "⚙️ RISE Action Catalog",
-            class = "gds-side-nav-link"
-          )
-        )
-      )
-    } else if (role == "regional_admin") {
-      tags$ul(
-        style = "padding-left: 0; margin: 0; list-style-type: none;",
-        dashboard_home_link,
-        tags$li(
-          class = "gds-side-nav-item",
-          shiny::actionLink(
-            "side_nav_quality",
-            "⚠️ Regional Quality Issues",
-            class = "gds-side-nav-link"
-          )
-        )
-      )
-    } else {
-      NULL
-    }
-
-    tagList(side_nav_styles, menu_list)
+    build_admin_side_nav(user_role())
   })
-  # ------------------------------------------------------------------
-  # Service Navigation Link Interceptors
-  # ------------------------------------------------------------------
+
   output$dynamic_gds_service_navigation <- renderUI({
     current_role <- user_role()
-
     nav_links <- if (!is.null(current_role)) {
       build_service_nav_links(current_role)
     } else {
@@ -120,28 +88,27 @@ server <- function(input, output, session) {
     )
   })
 
+  # Standard Tab Directives
   observeEvent(input$home, {
     bslib::nav_select("main_navbar", "home")
   })
-
   observeEvent(input$search, {
     bslib::nav_select("main_navbar", "search")
   })
-
   observeEvent(input$hubs_search, {
     bslib::nav_select("main_navbar", "hubs_search")
   })
-
   observeEvent(input$events_master_catalog, {
     bslib::nav_select("main_navbar", "events_master_catalog")
   })
-
   observeEvent(input$support, {
     bslib::nav_select("main_navbar", "support")
   })
 
+  # Composite Sub-tab Routing Directories
   observeEvent(input$user_menu, {
     bslib::nav_select("main_navbar", "user_menu")
+    bslib::nav_select("user_menu-user_sub_pages", "user_sub_profile")
   })
 
   observeEvent(input$admin_dashboard, {
@@ -149,11 +116,7 @@ server <- function(input, output, session) {
     bslib::nav_select("admin_sub_pages", "sub_admin_landing")
   })
 
-  observeEvent(input$user_menu, {
-    bslib::nav_select("main_navbar", "user_menu")
-    bslib::nav_select("user_menu-user_sub_pages", "user_sub_profile")
-  })
-
+  # Admin Side Navigation Routing Interceptors
   observeEvent(input$side_nav_console_home, {
     bslib::nav_select("admin_sub_pages", "sub_admin_landing")
   })
@@ -173,40 +136,23 @@ server <- function(input, output, session) {
     bslib::nav_select("admin_sub_pages", "sub_regional_quality")
   })
 
-  # ------------------------------------------------------------------
-  # Home / Landing Views
-  # ------------------------------------------------------------------
+  # Static Header Views Data Bindings
   output$welcome_user <- renderText({
     paste0("Welcome, ", user())
   })
   output$profile_user <- renderText(user())
   output$profile_role <- renderText(user_role())
-
   output$news <- renderUI({
     ui_show_news()
   })
-
   output$summary_metrics <- renderUI({
     dauPortalTools::ru_render_summary()
   })
 
-  # ------------------------------------------------------------------
-  # Shared Polymorphic Universal State Tracker
-  # ------------------------------------------------------------------
-  active_target <- reactiveValues(
-    id = NULL,
-    type = "School",
-    name = NULL
-  )
+  # =================================================================================
+  # 5. UNIVERSAL METADATA-DRIVEN SEARCH ENGINE LAYER
+  # =================================================================================
 
-  selected_sigchange <- reactiveVal(NULL)
-  original_record <- reactiveVal(NULL)
-  selected_support_id <- reactiveVal(NULL)
-  selected_lead_id <- reactiveVal(NULL)
-
-  # ------------------------------------------------------------------
-  # Universal Metadata-Driven Search Engine
-  # ------------------------------------------------------------------
   output$filters <- renderUI({
     tagList(
       radioButtons(
@@ -241,6 +187,7 @@ server <- function(input, output, session) {
     raw_entities_list(dauPortalTools::db_get_search_entities(
       input$filter_entity_type
     ))
+
     engaged_df <- dauPortalTools::db_get_engaged_entity_ids(
       input$filter_entity_type
     )
@@ -251,45 +198,15 @@ server <- function(input, output, session) {
 
   filtered_entities_data <- reactive({
     req(raw_entities_list(), !is.null(engaged_provision_ids()))
-    df <- raw_entities_list()
-    engaged_list <- engaged_provision_ids()
 
-    id_header <- dauPortalTools::db_resolve_entity_key_label(
-      input$filter_entity_type
+    apply_entity_search_filters(
+      df = raw_entities_list(),
+      entity_type = input$filter_entity_type,
+      engaged_list = engaged_provision_ids(),
+      search_id = input$filter_search_id,
+      search_name = input$filter_search_name,
+      support_status = input$filter_has_support
     )
-    name_header <- names(df)[2]
-
-    df$`Receives Support` <- ifelse(
-      df[[id_header]] %in% engaged_list,
-      "Yes",
-      "No"
-    )
-
-    if (nzchar(input$filter_search_id %||% "")) {
-      df <- dplyr::filter(
-        df,
-        grepl(input$filter_search_id, .data[[id_header]], ignore.case = TRUE)
-      )
-    }
-    if (nzchar(input$filter_search_name %||% "")) {
-      df <- dplyr::filter(
-        df,
-        grepl(
-          input$filter_search_name,
-          .data[[name_header]],
-          ignore.case = TRUE
-        )
-      )
-    }
-    if (
-      nzchar(input$filter_has_support %||% "") &&
-        !identical(input$filter_has_support, "All")
-    ) {
-      target_val <- ifelse(input$filter_has_support == "Yes Only", "Yes", "No")
-      df <- dplyr::filter(df, `Receives Support` == target_val)
-    }
-
-    df
   })
 
   output$school_table <- DT::renderDataTable({
@@ -313,9 +230,7 @@ server <- function(input, output, session) {
     )
   })
 
-  # ------------------------------------------------------------------
-  # Session Profile Context
-  # ------------------------------------------------------------------
+  # Primary Selection Handlers (Click/Double-Click Entity Routing)
   observeEvent(input$school_table_rows_selected, {
     req(input$school_table_rows_selected)
     row_idx <- input$school_table_rows_selected
@@ -355,15 +270,23 @@ server <- function(input, output, session) {
     updateNavbarPage(session, "main_navbar", selected = "school_overview")
   })
 
-  # ------------------------------------------------------------------
-  # Polymorphic Overview & Sub-Page Submodules Wiring
-  # ------------------------------------------------------------------
+  # =================================================================================
+  # 6. CORE ENTITY SUBMODULE WORKSPACES
+  # =================================================================================
+
+  server_entity_page(
+    id = "schoolpage",
+    active_target = active_target,
+    selected_urn = selected_support_id,
+    selected_lead_id = selected_lead_id,
+    main_navbar_session = session
+  )
+
   support_page_server <- server_hub_support_page(
     "hub_support_page",
     selected_support_id = selected_support_id,
     active_target = active_target
   )
-
   observeEvent(support_page_server$go_back(), {
     req(support_page_server$go_back() > 0)
     updateNavbarPage(session, "main_navbar", selected = "school_overview")
@@ -374,12 +297,12 @@ server <- function(input, output, session) {
     selected_lead_id = selected_lead_id,
     active_target = active_target
   )
-
   observeEvent(lead_page_server$go_back(), {
     req(lead_page_server$go_back() > 0)
     updateNavbarPage(session, "main_navbar", selected = "school_overview")
   })
 
+  # Entity Page Routing Interceptors
   observeEvent(input$`schoolpage-hub_support_dblclicked`, {
     id_val <- input$`schoolpage-hub_support_dblclicked`
     req(id_val)
@@ -401,6 +324,14 @@ server <- function(input, output, session) {
     bslib::nav_select("main_navbar", "hub_lead_page")
   })
 
+  observeEvent(input$`schoolpage-event_timeline_dblclicked`, {
+    id_val <- input$`schoolpage-event_timeline_dblclicked`
+    req(id_val)
+    selected_event_id_token(as.integer(id_val))
+    bslib::nav_select("main_navbar", "event_instance_page")
+  })
+
+  # Context Restoration Guards
   observeEvent(selected_support_id(), {
     if (
       is.null(selected_support_id()) && input$main_navbar == "hub_support_page"
@@ -415,34 +346,10 @@ server <- function(input, output, session) {
     }
   })
 
-  # ------------------------------------------------------------------
-  # Deep Link Parser Engine (?scid= Workflow Integration)
-  # ------------------------------------------------------------------
-  observeEvent(session$clientData$url_search, {
-    query <- parseQueryString(session$clientData$url_search)
-    req(query$scid, sigchange_data())
+  # =================================================================================
+  # 7. HUB ADMINISTRATION SUB-SYSTEM
+  # =================================================================================
 
-    sig_id <- suppressWarnings(as.integer(query$scid))
-    req(!is.na(sig_id))
-
-    sc <- dplyr::filter(sigchange_data(), sig_change_id == sig_id)
-    req(nrow(sc) == 1)
-
-    row <- sc[1, , drop = FALSE]
-
-    selected_sigchange(as.list(row))
-    original_record(as.list(row))
-
-    active_target$id <- as.integer(sc$URN)
-    active_target$type <- "School"
-    active_target$name <- as.character(sc$schoolname)
-
-    updateNavbarPage(session, "main_navbar", selected = "sigchange")
-  })
-
-  # ------------------------------------------------------------------
-  # Hub Master Administration Sub-system
-  # ------------------------------------------------------------------
   refresh_hubs <- reactiveVal(0)
   selected_hub <- reactiveVal(0)
   global_lead_id <- reactiveVal(NULL)
@@ -560,36 +467,34 @@ server <- function(input, output, session) {
     main_navbar_session = session
   )
 
+  # Hub Intercept Event Triggers
   observeEvent(input[["hub_overview_module-hub_school_dblclicked"]], {
     updateNavbarPage(session, "main_navbar", selected = "school_overview")
   })
 
-  # ------------------------------------------------------------------
-  # Profiles, Admin Wrappers & Statically Initialized Layers
-  # ------------------------------------------------------------------
-  server_user_menu(
-    "user_menu",
-    user = user,
-    user_role = user_role,
-    sigchange_data = sigchange_data,
-    sigchange_types = sigchange_types,
-    giaschange_types = giaschange_types,
-    selected_sigchange = selected_sigchange,
-    selected_urn = reactive({
-      active_target$id
-    }),
-    original_record = original_record
-  )
+  observeEvent(input$`huboverview-hub_school_dblclicked`, {
+    req(input$`huboverview-hub_school_dblclicked`)
+    selected_urn(as.character(input$`huboverview-hub_school_dblclicked`))
+    updateNavbarPage(
+      session = main_navbar_session,
+      inputId = "main_navbar",
+      selected = "school_overview"
+    )
+  })
 
-  observeEvent(
-    TRUE,
-    {
-      dauPortalTools::server_portal_user_admin("admin")
-    },
-    once = TRUE
-  )
+  observeEvent(input$`huboverview-hub_lead_row_dblclicked`, {
+    req(input$`huboverview-hub_lead_row_dblclicked`, selected_lead_id)
+    selected_lead_id(as.integer(input$`huboverview-hub_lead_row_dblclicked`))
+    updateNavbarPage(
+      session = main_navbar_session,
+      inputId = "main_navbar",
+      selected = "hub_lead_management"
+    )
+  })
 
-  server_quality_wrapper("quality", app_id = utils_get_app_id())
+  # =================================================================================
+  # 8. EVENTS SYSTEM WORKSPACES
+  # =================================================================================
 
   global_selected_event_type_id <- reactiveVal(0)
 
@@ -600,54 +505,21 @@ server <- function(input, output, session) {
   )
 
   server_event_overview(
-    id = "event_instance_page",
+    id = "event_overview",
     selected_event_master_id = global_selected_event_type_id,
     selected_urn = selected_support_id,
     selected_lead_id = selected_lead_id,
     main_navbar_session = session
   )
 
-  server_event_type_blueprint_workspace(
-    "event_type_blueprint_workspace",
-    global_selected_event_type_id,
-    session
-  )
-
-  # ------------------------------------------------------------------
-  # Master Apps Routing
-  # ------------------------------------------------------------------
-  selected_event_id_token <- reactiveVal(NULL)
-
-  server_entity_page(
-    id = "schoolpage",
-    active_target = active_target,
-    selected_urn = selected_support_id,
-    selected_lead_id = selected_lead_id,
-    main_navbar_session = session
-  )
-
   event_instance_router <- server_event_instance_page(
-    id = "event_instance_panel",
-    selected_event_id = selected_event_id_token
+    id = "event_instance_page",
+    selected_event_id = selected_event_id_token,
+    active_target = active_target
   )
-
-  observeEvent(input$`schoolpage-event_timeline_dblclicked`, {
-    id_val <- input$`schoolpage-event_timeline_dblclicked`
-    req(id_val)
-
-    selected_event_id_token(as.integer(id_val))
-    print(paste("Navigating directly to event instance entry ID:", id_val))
-
-    updateNavbarPage(
-      session = session,
-      inputId = "main_navbar",
-      selected = "event_instance_page"
-    )
-  })
 
   observeEvent(event_instance_router$go_back(), {
     selected_event_id_token(NULL)
-
     updateNavbarPage(
       session = session,
       inputId = "main_navbar",
@@ -655,9 +527,52 @@ server <- function(input, output, session) {
     )
   })
 
+  observeEvent(input$`event_overview-event_school_dblclicked`, {
+    req(input$`event_overview-event_school_dblclicked`)
+    active_target$id <- as.integer(
+      input$`event_overview-event_school_dblclicked`
+    )
+    active_target$type <- "School"
+    updateNavbarPage(session, "main_navbar", selected = "school_overview")
+  })
+
+  observeEvent(input$`event_overview-event_lead_row_dblclicked`, {
+    req(input$`event_overview-event_lead_row_dblclicked`)
+    selected_lead_id(as.integer(
+      input$`event_overview-event_lead_row_dblclicked`
+    ))
+    updateNavbarPage(session, "main_navbar", selected = "event_lead_management")
+  })
+
   # =================================================================================
-  # ADMINISTRATION SYSTEM WORKSPACES
+  # 9. USER SUBPROFILES & WRAPPERS
   # =================================================================================
+
+  server_user_menu(
+    "user_menu",
+    user = user,
+    user_role = user_role,
+    sigchange_data = sigchange_data,
+    sigchange_types = sigchange_types,
+    giaschange_types = giaschange_types,
+    selected_sigchange = selected_sigchange,
+    original_record = original_record,
+    selected_urn = reactive({
+      active_target$id
+    })
+  )
+
+  # =================================================================================
+  # 10. PROTECTED INLINE RUNTIME SAFETY LAYERS (STATIC REGISTRIES)
+  # =================================================================================
+
+  observeEvent(
+    TRUE,
+    {
+      dauPortalTools::server_portal_user_admin("admin")
+    },
+    once = TRUE
+  )
 
   tryCatch(
     {
@@ -691,24 +606,4 @@ server <- function(input, output, session) {
       ))
     }
   )
-
-  observeEvent(input$`huboverview-hub_school_dblclicked`, {
-    req(input$`huboverview-hub_school_dblclicked`)
-    selected_urn(as.character(input$`huboverview-hub_school_dblclicked`))
-    updateNavbarPage(
-      session = main_navbar_session,
-      inputId = "main_navbar",
-      selected = "school_overview"
-    )
-  })
-
-  observeEvent(input$`huboverview-hub_lead_row_dblclicked`, {
-    req(input$`huboverview-hub_lead_row_dblclicked`, selected_lead_id)
-    selected_lead_id(as.integer(input$`huboverview-hub_lead_row_dblclicked`))
-    updateNavbarPage(
-      session = main_navbar_session,
-      inputId = "main_navbar",
-      selected = "hub_lead_management"
-    )
-  })
 }
