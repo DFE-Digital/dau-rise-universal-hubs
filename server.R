@@ -394,6 +394,13 @@ server <- function(input, output, session) {
     bslib::nav_select("main_navbar", "hub_lead_page")
   })
 
+  observeEvent(input$`schoolpage-lead_provider_row_dblclicked`, {
+    id_val <- input$`schoolpage-lead_provider_row_dblclicked`
+    req(id_val)
+    selected_lead_id(as.integer(id_val))
+    bslib::nav_select("main_navbar", "hub_lead_page")
+  })
+
   observeEvent(selected_support_id(), {
     if (
       is.null(selected_support_id()) && input$main_navbar == "hub_support_page"
@@ -438,6 +445,7 @@ server <- function(input, output, session) {
   # ------------------------------------------------------------------
   refresh_hubs <- reactiveVal(0)
   selected_hub <- reactiveVal(0)
+  global_lead_id <- reactiveVal(NULL)
 
   filtered_hubs <- reactive({
     refresh_hubs()
@@ -548,6 +556,7 @@ server <- function(input, output, session) {
     id = "hub_overview_module",
     selected_hub_id = selected_hub,
     selected_urn = active_target$id,
+    selected_lead_id = global_lead_id,
     main_navbar_session = session
   )
 
@@ -589,6 +598,15 @@ server <- function(input, output, session) {
     global_selected_event_type_id,
     session
   )
+
+  server_event_overview(
+    id = "event_instance_page",
+    selected_event_master_id = global_selected_event_type_id,
+    selected_urn = selected_support_id,
+    selected_lead_id = selected_lead_id,
+    main_navbar_session = session
+  )
+
   server_event_type_blueprint_workspace(
     "event_type_blueprint_workspace",
     global_selected_event_type_id,
@@ -602,7 +620,10 @@ server <- function(input, output, session) {
 
   server_entity_page(
     id = "schoolpage",
-    active_target = active_target
+    active_target = active_target,
+    selected_urn = selected_support_id,
+    selected_lead_id = selected_lead_id,
+    main_navbar_session = session
   )
 
   event_instance_router <- server_event_instance_page(
@@ -620,7 +641,7 @@ server <- function(input, output, session) {
     updateNavbarPage(
       session = session,
       inputId = "main_navbar",
-      selected = "universal_event_instance_page"
+      selected = "event_instance_page"
     )
   })
 
@@ -670,4 +691,24 @@ server <- function(input, output, session) {
       ))
     }
   )
+
+  observeEvent(input$`huboverview-hub_school_dblclicked`, {
+    req(input$`huboverview-hub_school_dblclicked`)
+    selected_urn(as.character(input$`huboverview-hub_school_dblclicked`))
+    updateNavbarPage(
+      session = main_navbar_session,
+      inputId = "main_navbar",
+      selected = "school_overview"
+    )
+  })
+
+  observeEvent(input$`huboverview-hub_lead_row_dblclicked`, {
+    req(input$`huboverview-hub_lead_row_dblclicked`, selected_lead_id)
+    selected_lead_id(as.integer(input$`huboverview-hub_lead_row_dblclicked`))
+    updateNavbarPage(
+      session = main_navbar_session,
+      inputId = "main_navbar",
+      selected = "hub_lead_management"
+    )
+  })
 }

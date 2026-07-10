@@ -1,3 +1,7 @@
+#' Polymorphic Hub Lead & Provider Contract Management Page Module UI
+#'
+#' @param id Character scalar. Shiny namespace identifier.
+#' @export
 ui_hub_lead_page <- function(id) {
   ns <- NS(id)
 
@@ -8,35 +12,67 @@ ui_hub_lead_page <- function(id) {
         div(
           style = "margin-bottom: 20px; margin-top: 10px;",
           actionButton(
-            ns("back_to_school"),
-            "Back to School Profile",
+            ns("back_to_profile"),
+            "Return to Node Profile Context",
             icon = icon("arrow-left"),
-            class = "govuk-button--secondary"
+            class = "btn-secondary"
           )
         )
       )
     ),
 
-    layout_column_wrap(
-      width = 1,
-      bslib::card(
-        bslib::card_header("Lead Hub Designation Status"),
-        layout_column_wrap(
-          width = 1 / 3,
-          selectInput(ns("hub_id"), "Associated Hub Framework", choices = NULL),
-
-          ui_date_input(ns("date_active"), "Date Status Active From"),
-          ui_date_input(ns("date_ended"), "Date Status Concluded", value = NA)
-        ),
-        textAreaInput(
-          ns("comment"),
-          "Designation Notes / Authority Profile",
-          rows = 3
-        ),
+    bslib::card(
+      bslib::card_header(
+        class = "bg-dark text-white d-flex justify-content-between align-items-center",
+        tags$span("Provider Assignment Core Information Profile Summary"),
         actionButton(
-          ns("save_lead"),
-          "Update Designation Status",
-          class = "btn-primary"
+          ns("btn_open_edit_modal"),
+          "Modify Assignment Meta Scope",
+          class = "btn-warning btn-sm",
+          icon = icon("edit")
+        )
+      ),
+      div(style = "padding: 20px;", uiOutput(ns("read_only_profile")))
+    ),
+    br(),
+
+    uiOutput(ns("summary_stats_container")),
+    br(),
+
+    fluidRow(
+      column(
+        5,
+        bslib::card(
+          bslib::card_header(
+            class = "bg-primary text-white d-flex justify-content-between align-items-center",
+            tags$span("Assigned Program Cohort Blocks Focus"),
+            actionButton(
+              ns("btn_add_cohort"),
+              "Assign Cohort Index",
+              class = "btn-success btn-sm",
+              icon = icon("plus")
+            )
+          ),
+          div(style = "padding: 10px;", DT::DTOutput(ns("cohorts_table")))
+        )
+      ),
+      column(
+        7,
+        bslib::card(
+          bslib::card_header(
+            class = "bg-primary text-white d-flex justify-content-between align-items-center",
+            tags$span("Granular Connected Entity Support Contracts"),
+            actionButton(
+              ns("btn_add_entity_link"),
+              "Link Active Sub-Contracts",
+              class = "btn-success btn-sm",
+              icon = icon("link")
+            )
+          ),
+          div(
+            style = "padding: 10px;",
+            DT::DTOutput(ns("assigned_entities_table"))
+          )
         )
       )
     )

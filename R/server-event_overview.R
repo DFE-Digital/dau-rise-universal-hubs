@@ -1,14 +1,14 @@
-#' Hub Detailed Configuration Overview Panel Server
+#' Event Detailed Configuration Overview Panel Server
 #'
 #' @param id Character scalar. Shiny namespace identifier.
-#' @param selected_hub_id ReactiveVal containing the integer primary key of the active Hub.
+#' @param selected_event_master_id ReactiveVal containing the integer primary key of the active Event group/container.
 #' @param selected_urn ReactiveVal tracking the target entity selected for redirect.
 #' @param selected_lead_id ReactiveVal tracking the target lead provider assignment selected for redirect.
 #' @param main_navbar_session The parent Shiny session used to control page tab navigation.
 #' @export
-server_hub_overview <- function(
+server_event_overview <- function(
   id,
-  selected_hub_id,
+  selected_event_master_id,
   selected_urn,
   selected_lead_id = NULL,
   main_navbar_session
@@ -19,70 +19,82 @@ server_hub_overview <- function(
     refresh_types <- reactiveVal(0)
     editing_type_id <- reactiveVal(NULL)
     active_category_id <- reactiveVal(0)
-    active_category_name <- reactiveVal("Global / Hub-Wide")
+    active_category_name <- reactiveVal("Global / Event-Wide")
 
-    observeEvent(input$support_types_table_rows_selected, {
-      all_types <- dauPortalTools::db_ruh_get_support_types(
-        hub_id = selected_hub_id()
+    observeEvent(input$event_types_table_rows_selected, {
+      all_types <- dauPortalTools::db_ru_get_event_types(
+        event_master_id = selected_event_master_id()
       )
       if (
-        nrow(all_types) > 0 && !is.null(input$support_types_table_rows_selected)
+        nrow(all_types) > 0 && !is.null(input$event_types_table_rows_selected)
       ) {
-        selected_row <- all_types[input$support_types_table_rows_selected, ]
-        active_category_id(as.integer(selected_row$ruht_id))
-        active_category_name(selected_row$ruht_name)
+        selected_row <- all_types[input$event_types_table_rows_selected, ]
+        active_category_id(as.integer(selected_row$ruevt_id))
+        active_category_name(selected_row$ruevt_name)
       } else {
         active_category_id(0)
-        active_category_name("Global / Hub-Wide")
+        active_category_name("Global / Event-Wide")
       }
     })
 
-    hub_data <- reactive({
-      req(selected_hub_id())
-      dauPortalTools::db_ruh_get_hubs(hub_id = selected_hub_id())
+    event_master_data <- reactive({
+      req(selected_event_master_id())
+      dauPortalTools::db_ru_get_event_master_record(
+        event_master_id = selected_event_master_id()
+      )
     })
 
-    observeEvent(hub_data(), {
-      updateTextInput(session, "hub_name_edit", value = hub_data()$ruhb_name)
+    observeEvent(event_master_data(), {
+      updateTextInput(
+        session,
+        "event_name_edit",
+        value = event_master_data()$ruevm_name
+      )
     })
 
-    observeEvent(input$save_hub_details, {
-      req(selected_hub_id(), input$hub_name_edit)
-      dauPortalTools::db_ruh_update_hub(
-        hub_id = selected_hub_id(),
-        hub_name = input$hub_name_edit,
+    observeEvent(input$save_event_details, {
+      req(selected_event_master_id(), input$event_name_edit)
+      dauPortalTools::db_ru_update_event_master(
+        event_master_id = selected_event_master_id(),
+        event_name = input$event_name_edit,
         user_id = dauPortalTools::get_user(session)
       )
       showNotification(
-        "Hub metadata name record committed safely.",
+        "Event metadata name record committed safely.",
         type = "message"
       )
     })
 
-    output$hub_stats_boxes <- renderUI({
-      req(selected_hub_id())
-      hid <- selected_hub_id()
+    output$event_stats_boxes <- renderUI({
+      req(selected_event_master_id())
+      em_id <- selected_event_master_id()
 
-      support_data <- dauPortalTools::db_ruh_get_support_records(hub_id = hid)
-      lead_data <- dauPortalTools::db_ruh_get_lead_support_records(hub_id = hid)
-      types_data <- dauPortalTools::db_ruh_get_support_types(hub_id = hid)
+      support_data <- dauPortalTools::db_ru_get_event_support_records(
+        event_master_id = em_id
+      )
+      lead_data <- dauPortalTools::db_ru_get_event_lead_records(
+        event_master_id = em_id
+      )
+      types_data <- dauPortalTools::db_ru_get_event_types(
+        event_master_id = em_id
+      )
 
       active_supported <- if (is.null(support_data)) {
         0
       } else {
-        length(unique(support_data$ruhsr_entity_id[
-          support_data$ruhsr_active == 1
+        length(unique(support_data$ruevsr_entity_id[
+          support_data$ruevsr_active == 1
         ]))
       }
       all_time_supported <- if (is.null(support_data)) {
         0
       } else {
-        length(unique(support_data$ruhsr_entity_id))
+        length(unique(support_data$ruevsr_entity_id))
       }
       active_leads <- if (is.null(lead_data)) {
         0
       } else {
-        length(unique(lead_data$lead_entity_id[lead_data$ruhl_active == 1]))
+        length(unique(lead_data$lead_entity_id[lead_data$ruevl_active == 1]))
       }
       type_count <- nrow(types_data)
 
@@ -91,25 +103,25 @@ server_hub_overview <- function(
         gap = "15px",
         fill = FALSE,
         bslib::value_box(
-          title = "Active Supported Entities",
+          title = "Active Event Entities",
           value = active_supported,
           showcase = icon("check-circle"),
           theme = "primary"
         ),
         bslib::value_box(
-          title = "All-Time Provision Footprint",
+          title = "All-Time Event Footprint",
           value = all_time_supported,
           showcase = icon("history"),
           theme = "secondary"
         ),
         bslib::value_box(
-          title = "Active Lead Providers",
+          title = "Active Event Leaders",
           value = active_leads,
           showcase = icon("star"),
           theme = "success"
         ),
         bslib::value_box(
-          title = "Configured Support Modes",
+          title = "Configured Event Modes",
           value = type_count,
           showcase = icon("layer-group"),
           theme = "info"
@@ -117,38 +129,40 @@ server_hub_overview <- function(
       )
     })
 
-    output$hub_support_schools_table <- DT::renderDT({
-      req(selected_hub_id())
-      df <- dauPortalTools::db_ruh_get_support_records(
-        hub_id = selected_hub_id()
+    output$event_support_schools_table <- DT::renderDT({
+      req(selected_event_master_id())
+      df <- dauPortalTools::db_ru_get_event_support_records(
+        event_master_id = selected_event_master_id()
       )
 
       if (is.null(df) || nrow(df) == 0) {
         return(data.frame(
-          "Status" = "No matching contract allocations recorded under this hub domain."
+          "Status" = "No matching event contract allocations recorded under this domain."
         ))
       }
       if (!input$include_inactive) {
-        df <- df |> dplyr::filter(ruhsr_active == 1)
+        df <- df |> dplyr::filter(ruevsr_active == 1)
       }
       if (nrow(df) == 0) {
-        return(data.frame("Status" = "No matching active allocations found."))
+        return(data.frame(
+          "Status" = "No matching active event allocations found."
+        ))
       }
 
       DT::datatable(
         df |>
           dplyr::select(
-            ruhsr_id,
-            ruhsr_entity_type,
-            ruhsr_entity_id,
-            support_type_name,
-            ruhsr_dateactive
+            ruevsr_id,
+            ruevsr_entity_type,
+            ruevsr_entity_id,
+            event_type_name,
+            ruevsr_dateactive
           ),
         colnames = c(
-          "Support Provision ID",
+          "Event Provision ID",
           "Entity Node Type",
           "Receiver Identity Code/URN",
-          "Framework Framework Type",
+          "Event Cohort Type",
           "Initialization Date"
         ),
         selection = "single",
@@ -157,41 +171,41 @@ server_hub_overview <- function(
         callback = DT::JS(
           "table.on('dblclick', 'tr', function() {
             var data = table.row(this).data();
-            if (data) Shiny.setInputValue('hub_school_dblclicked', data[2], {priority: 'event'});
+            if (data) Shiny.setInputValue('event_school_dblclicked', data[2], {priority: 'event'});
           });"
         )
       )
     })
 
-    output$hub_lead_providers_table <- DT::renderDT({
-      req(selected_hub_id())
-      leads_df <- dauPortalTools::db_ruh_get_lead_support_records(
-        hub_id = selected_hub_id()
+    output$event_lead_providers_table <- DT::renderDT({
+      req(selected_event_master_id())
+      leads_df <- dauPortalTools::db_ru_get_event_lead_records(
+        event_master_id = selected_event_master_id()
       )
 
       if (is.null(leads_df) || nrow(leads_df) == 0) {
         return(data.frame(
-          "Status" = "No designated lead provider entities mapped to this hub framework."
+          "Status" = "No designated lead provider entities mapped to this event framework."
         ))
       }
 
       compiled_rows <- lapply(seq_len(nrow(leads_df)), function(i) {
         lead <- leads_df[i, ]
-        cohorts <- dauPortalTools::db_ruh_get_lead_cohorts(
-          lead$ruhls_id
+        cohorts <- dauPortalTools::db_ru_get_event_lead_cohorts(
+          lead$ruevls_id
         )$cohort_id
-        cohort_str <- if (length(cohorts) == 0 || all(cohorts == 0)) {
-          "Global/Hub-Wide"
+        cohort_str := if (length(cohorts) == 0 || all(cohorts == 0)) {
+          "Global/Event-Wide"
         } else {
           paste(cohorts, collapse = ", ")
         }
-        cases <- dauPortalTools::db_ruh_get_assigned_support_records(
-          lead$ruhls_id
+        cases <- dauPortalTools::db_ru_get_assigned_event_records(
+          lead$ruevls_id
         )
         case_count <- if (is.null(cases)) 0 else nrow(cases)
 
         data.frame(
-          ruhls_id = lead$ruhls_id,
+          ruevls_id = lead$ruevls_id,
           provider_name = paste0(
             lead$lead_entity_type,
             ": ",
@@ -199,7 +213,7 @@ server_hub_overview <- function(
           ),
           cohorts = cohort_str,
           caseload = case_count,
-          status = if (lead$ruhl_active == 1) "Active" else "Concluded",
+          status = if (lead$ruevl_active == 1) "Active" else "Concluded",
           stringsAsFactors = FALSE
         )
       }) |>
@@ -220,29 +234,51 @@ server_hub_overview <- function(
         callback = DT::JS(
           "table.on('dblclick', 'tr', function() {
             var data = table.row(this).data();
-            if (data) Shiny.setInputValue('hub_lead_row_dblclicked', data[0], {priority: 'event'});
+            if (data) Shiny.setInputValue('event_lead_row_dblclicked', data[0], {priority: 'event'});
           });"
         )
       )
     })
 
-    output$support_types_table <- DT::renderDT({
+    observeEvent(input$event_school_dblclicked, {
+      req(input$event_school_dblclicked)
+      selected_urn(as.character(input$event_school_dblclicked))
+      updateNavbarPage(
+        session = main_navbar_session,
+        inputId = "main_navbar",
+        selected = "school_overview"
+      )
+    })
+
+    observeEvent(input$event_lead_row_dblclicked, {
+      req(input$event_lead_row_dblclicked, selected_lead_id)
+      selected_lead_id(as.integer(input$event_lead_row_dblclicked))
+      updateNavbarPage(
+        session = main_navbar_session,
+        inputId = "main_navbar",
+        selected = "event_lead_management"
+      )
+    })
+
+    output$event_types_table <- DT::renderDT({
       refresh_types()
-      req(selected_hub_id())
-      df <- dauPortalTools::db_ruh_get_support_types(hub_id = selected_hub_id())
+      req(selected_event_master_id())
+      df <- dauPortalTools::db_ru_get_event_types(
+        event_master_id = selected_event_master_id()
+      )
       if (nrow(df) == 0) {
         return(data.frame(
-          "Status" = "No local variant configuration types declared."
+          "Status" = "No local event variant configuration types declared."
         ))
       }
 
       DT::datatable(
         df |>
           dplyr::select(
-            ruht_id,
-            ruhb_id,
-            Name = ruht_name,
-            Description = ruht_description
+            ruevt_id,
+            ruevm_id,
+            Name = ruevt_name,
+            Description = ruevt_description
           ),
         selection = "single",
         rownames = FALSE,
@@ -253,7 +289,7 @@ server_hub_overview <- function(
         )
       ) |>
         DT::formatStyle(
-          'ruhb_id',
+          'ruevm_id',
           target = 'row',
           backgroundColor = DT::styleEqual(0, '#f8f9fa')
         )
@@ -267,38 +303,24 @@ server_hub_overview <- function(
     })
 
     output$sub_workspace_dynamic_content <- renderUI({
-      DT::dataTableOutput(ns("hub_actions_blueprint_table"))
+      DT::dataTableOutput(ns("event_actions_blueprint_table"))
     })
 
-    output$hub_actions_blueprint_table <- DT::renderDT({
+    output$event_actions_blueprint_table <- DT::renderDT({
       refresh_types()
-      req(selected_hub_id())
+      req(selected_event_master_id())
 
       conn <- dauPortalTools::sql_manager("dit")
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
-      cat_id <- active_category_id()
-
-      if (is.null(cat_id) || as.integer(cat_id) == 0) {
-        query <- glue::glue_sql(
-          "
-          SELECT [ruhbf_name], [ruhbf_rule_type], [ruhbf_required]
-          FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
-          WHERE [ruht_id] = 0 AND [ruhb_id] = {as.integer(selected_hub_id())};
-          ",
-          .con = conn
-        )
-      } else {
-        query <- glue::glue_sql(
-          "
-          SELECT [ruhbf_name], [ruhbf_rule_type], [ruhbf_required]
-          FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
-          WHERE [ruht_id] = {as.integer(cat_id)};
-          ",
-          .con = conn
-        )
-      }
-
+      query <- glue::glue_sql(
+        "
+        SELECT [rueva_name], [rueva_rule_type], [rueva_required] 
+        FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ru_event_actions]
+        WHERE [ruevt_id] = {as.integer(active_category_id())} AND [ruevm_id] = {as.integer(selected_event_master_id())};
+        ",
+        .con = conn
+      )
       df <- DBI::dbGetQuery(conn, query)
 
       if (is.null(df) || nrow(df) == 0) {
@@ -319,23 +341,23 @@ server_hub_overview <- function(
       )
     })
 
-    show_support_type_modal <- function(row_data = NULL) {
+    show_event_type_modal <- function(row_data = NULL) {
       showModal(modalDialog(
         title = if (is.null(row_data)) {
-          "Register Support Category / Cohort"
+          "Register Event Category / Cohort"
         } else {
-          paste("Modify Schema Mode:", row_data$ruht_name)
+          paste("Modify Schema Mode:", row_data$ruevt_name)
         },
         size = "m",
         textInput(
           ns("type_name"),
           "Category Cohort Presentation Title Name:",
-          value = row_data$ruht_name %||% ""
+          value = row_data$ruevt_name %% ""
         ),
         textAreaInput(
           ns("type_desc"),
           "Method Guidelines / Scope Definition Context Notes:",
-          value = row_data$ruht_description %||% "",
+          value = row_data$ruevt_description %|% "",
           rows = 4
         ),
         footer = tagList(
@@ -350,30 +372,30 @@ server_hub_overview <- function(
       ))
     }
 
-    observeEvent(input$add_support_type, {
+    observeEvent(input$add_event_type, {
       editing_type_id(NULL)
-      show_support_type_modal()
+      show_event_type_modal()
     })
 
     observeEvent(input$save_type, {
-      req(input$type_name, selected_hub_id())
+      req(input$type_name, selected_event_master_id())
       user_id <- dauPortalTools::get_user(session)
       if (is.null(editing_type_id())) {
-        dauPortalTools::db_ruh_add_support_type(
-          selected_hub_id(),
+        dauPortalTools::db_ru_add_event_type(
+          selected_event_master_id(),
           input$type_name,
           input$type_desc,
           user_id
         )
-        msg <- "New regional cohort tracking layer created."
+        msg <- "New point-in-time regional event category tracking layer created."
       } else {
-        dauPortalTools::db_ruh_update_support_type(
+        dauPortalTools::db_ru_update_event_type(
           editing_type_id(),
           input$type_name,
           input$type_desc,
           user_id
         )
-        msg <- "Cohort configuration rules committed."
+        msg <- "Event configuration rules committed."
       }
       removeModal()
       refresh_types(refresh_types() + 1)
@@ -390,7 +412,7 @@ server_hub_overview <- function(
         footer = tagList(
           modalButton("Cancel"),
           actionButton(
-            ns("save_hub_field"),
+            ns("save_event_field"),
             "Commit Action Rule",
             class = "btn-success"
           )
@@ -399,7 +421,7 @@ server_hub_overview <- function(
           textInput(
             ns("field_name"),
             "Input Action Field Presentational Label Title:",
-            placeholder = "e.g., Initial Action Plan Signed Date"
+            placeholder = "e.g., Attendance Log Count Sheet Submitted"
           ),
           selectInput(
             ns("field_type"),
@@ -412,13 +434,12 @@ server_hub_overview <- function(
               "Dropdown Selection Menu" = "Dropdown"
             )
           ),
-
           shiny::conditionalPanel(
             condition = sprintf("input['%s'] == 'Dropdown'", ns("field_type")),
             textAreaInput(
               ns("field_dropdown_options"),
               "Dropdown Menu Options (Comma-Separated):",
-              placeholder = "e.g., Red, Amber, Green",
+              placeholder = "e.g., Attended, Apologies, No Show",
               rows = 2
             )
           ),
@@ -426,8 +447,7 @@ server_hub_overview <- function(
           textAreaInput(
             ns("field_desc"),
             "Form Input Guideline Note Hint Text Context:",
-            rows = 2,
-            placeholder = "Optional guidance instructions..."
+            rows = 2
           ),
           checkboxInput(
             ns("field_req"),
@@ -438,8 +458,8 @@ server_hub_overview <- function(
       ))
     })
 
-    observeEvent(input$save_hub_field, {
-      req(input$field_name, input$field_type, selected_hub_id())
+    observeEvent(input$save_event_field, {
+      req(input$field_name, input$field_type, selected_event_master_id())
 
       conn <- dauPortalTools::sql_manager("dit")
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
@@ -455,14 +475,14 @@ server_hub_overview <- function(
 
       query <- glue::glue_sql(
         "
-        INSERT INTO {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] 
-        ([ruht_id], [ruhb_id], [ruhsc_id], [ruhbf_name], [ruhbf_description], [ruhbf_rule_type], [ruhbf_required], [ruhbf_active], [created_date], [created_by])
+        INSERT INTO {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ru_event_actions] 
+        ([ruevt_id], [ruevm_id], [ruesv_id], [rueva_name], [rueva_description], [rueva_rule_type], [rueva_required], [rueva_active], [created_date], [created_by])
         VALUES (
           {as.integer(active_category_id())}, 
-          {as.integer(selected_hub_id())}, 
-          0,                               
+          {as.integer(selected_event_master_id())},
+          0,
           {input$field_name}, 
-          {final_description}, -- Stores comma-separated choices for dropdowns
+          {final_description}, 
           {input$field_type}, 
           {if (input$field_req) 1 else 0}, 
           1, 
@@ -475,17 +495,17 @@ server_hub_overview <- function(
 
       DBI::dbExecute(conn, query)
       showNotification(
-        "Dynamic metric action tracking blueprint rule appended safely.",
+        "Point-in-time interaction blueprint rule appended safely.",
         type = "message"
       )
       refresh_types(refresh_types() + 1)
     })
 
-    observeEvent(input$back_to_hubs_search, {
+    observeEvent(input$back_to_events_search, {
       updateNavbarPage(
         session = main_navbar_session,
         inputId = "main_navbar",
-        selected = "hubs_search"
+        selected = "events_search"
       )
     })
   })

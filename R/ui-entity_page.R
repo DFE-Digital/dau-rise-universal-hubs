@@ -16,7 +16,7 @@ school_page_ui <- function(id) {
     bslib::card(
       bslib::card_header(
         class = "bg-dark text-white d-flex justify-content-between align-items-center",
-        tags$span("Hubs Support"),
+        tags$span("Hubs Support Contracts"),
         actionButton(
           ns("new_support_record"),
           "Log New Hub Support",
@@ -35,7 +35,7 @@ school_page_ui <- function(id) {
     bslib::card(
       bslib::card_header(
         class = "bg-primary text-white d-flex justify-content-between align-items-center",
-        tags$span("RISE Universal Events"),
+        tags$span("RISE Universal Events Timeline"),
         actionButton(
           ns("add_new_event_transaction"),
           "Log Event",
@@ -52,10 +52,10 @@ school_page_ui <- function(id) {
     bslib::card(
       bslib::card_header(
         class = "bg-dark text-white d-flex justify-content-between align-items-center",
-        tags$span("Lead Entity Records"),
+        tags$span("Lead & Provider Matrix Assignments"),
         actionButton(
           ns("new_lead_record"),
-          "Register Lead Status",
+          "Register Provider Status",
           class = "btn btn-primary btn-sm",
           icon = icon("award")
         )

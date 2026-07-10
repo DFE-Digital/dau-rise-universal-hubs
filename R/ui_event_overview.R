@@ -1,21 +1,21 @@
-#' Hub Detailed Configuration Overview Panel UI
+#' Event Detailed Configuration Overview Panel UI
 #' @export
-ui_hub_overview <- function(id) {
+ui_event_overview <- function(id) {
   ns <- NS(id)
 
   bslib::page_fluid(
     bslib::card(
-      style = "border-top: 4px solid #1d70b8; margin-bottom: 20px;",
+      style = "border-top: 4px solid #005ea5; margin-bottom: 20px;",
       bslib::card_header(
         class = "bg-light d-flex justify-content-between align-items-center",
         style = "border-bottom: none; padding: 15px 20px;",
         tags$span(
           style = "font-size: 20px; font-weight: bold; color: #0b0c0c;",
-          "RISE Regional Hub Profile Workspace"
+          "RISE Point-in-Time Event Profile Workspace"
         ),
         actionButton(
-          ns("back_to_hubs_search"),
-          "Return to Hubs Directory",
+          ns("back_to_events_search"),
+          "Return to Events Directory",
           class = "btn btn-outline-dark btn-sm",
           icon = icon("arrow-left")
         )
@@ -25,13 +25,13 @@ ui_hub_overview <- function(id) {
         div(
           style = "display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;",
           textInput(
-            ns("hub_name_edit"),
-            "Modify Active Regional Hub Corporate Title Name:",
+            ns("event_name_edit"),
+            "Modify Active Event Instance Context Title Name:",
             width = "450px"
           ),
           actionButton(
-            ns("save_hub_details"),
-            "Update Hub Name Spec",
+            ns("save_event_details"),
+            "Update Event Name Spec",
             class = "btn btn-primary",
             icon = icon("save"),
             style = "margin-bottom: 15px; font-weight: bold;"
@@ -40,7 +40,7 @@ ui_hub_overview <- function(id) {
       )
     ),
 
-    uiOutput(ns("hub_stats_boxes")),
+    uiOutput(ns("event_stats_boxes")),
     br(),
 
     fluidRow(
@@ -52,7 +52,7 @@ ui_hub_overview <- function(id) {
             class = "bg-secondary text-white d-flex justify-content-between align-items-center",
             tags$span(
               style = "font-weight: bold;",
-              "Tracked Institutional Allocations (Provisions)"
+              "Tracked Institutional Event Allocations (Provisions)"
             ),
             checkboxInput(
               ns("include_inactive"),
@@ -62,7 +62,7 @@ ui_hub_overview <- function(id) {
           ),
           div(
             style = "padding: 15px; height: 380px; overflow-y: auto;",
-            DT::dataTableOutput(ns("hub_support_schools_table"))
+            DT::dataTableOutput(ns("event_support_schools_table"))
           ),
           tags$div(
             class = "govuk-hint",
@@ -80,12 +80,12 @@ ui_hub_overview <- function(id) {
             class = "bg-dark text-white",
             tags$span(
               style = "font-weight: bold;",
-              "Designated Lead Providers & System Supporters"
+              "Designated Event Providers & System Supporters"
             )
           ),
           div(
             style = "padding: 15px; height: 380px; overflow-y: auto;",
-            DT::dataTableOutput(ns("hub_lead_providers_table"))
+            DT::dataTableOutput(ns("event_lead_providers_table"))
           ),
           tags$div(
             class = "govuk-hint",
@@ -106,10 +106,10 @@ ui_hub_overview <- function(id) {
           class = "bg-dark text-white d-flex justify-content-between align-items-center",
           tags$span(
             style = "font-weight: bold;",
-            "1. Regional Support Categories (Cohorts)"
+            "1. Regional Event Categories (Cohorts)"
           ),
           actionButton(
-            ns("add_support_type"),
+            ns("add_event_type"),
             "Add Category / Cohort",
             icon = icon("plus"),
             class = "btn btn-success btn-sm"
@@ -117,7 +117,7 @@ ui_hub_overview <- function(id) {
         ),
         div(
           style = "padding: 15px; min-height: 350px; overflow-y: auto;",
-          DT::dataTableOutput(ns("support_types_table"))
+          DT::dataTableOutput(ns("event_types_table"))
         )
       ),
 

@@ -1,100 +1,74 @@
 #' Polymorphic Hub Provision Support Tracking Page Module UI
 #'
-#' Renders the master form panel for updating tracking records and triggers dynamic event inputs.
-#'
-#' @param id Character scalar.
+#' @param id Character scalar. Shiny namespace identifier.
 #' @export
 ui_hub_support_page <- function(id) {
   ns <- NS(id)
 
   bslib::page_fluid(
+    shinyjs::useShinyjs(),
+
     bslib::card(
+      style = "margin-bottom: 20px;",
       bslib::card_header(
-        class = "bg-secondary text-white d-flex justify-content-between align-items-center",
-        tags$span("Active Provision Track Administration Panel"),
+        class = "bg-primary text-white d-flex justify-content-between align-items-center",
+        tags$h5(
+          style = "margin: 0;",
+          "RISE Framework Support Provision Workspace"
+        ),
         actionButton(
           ns("back_to_school"),
-          "Return to Target Profile",
+          "Return to Node Profile Context",
           class = "btn btn-light btn-sm",
           icon = icon("arrow-left")
         )
-      ),
-
-      div(
-        style = "padding: 20px;",
-        fluidRow(
-          column(
-            4,
-            selectInput(
-              ns("hub_id"),
-              "Parent Hub Regional Matrix Location:",
-              choices = character(0)
-            )
-          ),
-          column(
-            4,
-            selectInput(
-              ns("ruht_id"),
-              "Framework Track Category:",
-              choices = character(0)
-            )
-          )
-        ),
-        br(),
-        fluidRow(
-          column(
-            12,
-            textAreaInput(
-              ns("comment"),
-              "Provision Context / Strategic Baseline Notes:",
-              rows = 3,
-              width = "100%"
-            )
-          )
-        ),
-        br(),
-        fluidRow(
-          column(
-            6,
-            ui_date_input(
-              ns("date_active"),
-              "Framework Commencement Date active from:"
-            )
-          ),
-          column(
-            6,
-            ui_date_input(
-              ns("date_ended"),
-              "Framework Track Termination Date (Optional):"
-            )
-          )
-        ),
-        br(),
-        actionButton(
-          ns("save_support"),
-          "Commit Provision Changes",
-          class = "btn btn-primary",
-          icon = icon("save")
-        )
       )
     ),
-    br(),
 
     bslib::card(
+      style = "margin-bottom: 20px;",
+      bslib::card_header(
+        class = "bg-dark text-white d-flex justify-content-between align-items-center",
+        tags$span("Core Provision Contract Information Profile Summary"),
+        actionButton(
+          ns("btn_open_edit_modal"),
+          "Modify Contract Parameters",
+          class = "btn btn-warning btn-sm",
+          icon = icon("edit")
+        )
+      ),
+      div(style = "padding: 20px;", uiOutput(ns("read_only_contract_profile")))
+    ),
+
+    bslib::card(
+      style = "margin-bottom: 20px;",
+      bslib::card_header(
+        class = "bg-secondary text-white",
+        "Designated Framework Lead Supporter Node"
+      ),
+      div(style = "padding: 15px;", uiOutput(ns("lead_provider_status_banner")))
+    ),
+
+    bslib::card(
+      style = "margin-bottom: 25px;",
       bslib::card_header(
         class = "bg-dark text-white d-flex justify-content-between align-items-center",
         tags$span(
-          "Point-in-Time Interaction History & Evaluation Metrics Logs"
+          "Actions/Data: Interaction Milestone Blueprint Actions Timeline"
         ),
         actionButton(
           ns("add_action"),
-          "Log New Interaction Event",
+          "Execute Sub-Action Metric Requirement Block",
           class = "btn btn-success btn-sm",
           icon = icon("calendar-plus")
         )
       ),
       div(
-        style = "padding: 15px;",
+        style = "padding: 15px; overflow-y: auto;",
+        p(em(
+          class = "text-muted",
+          "💡 Double-click any active tracking requirement line parameter item below to view or alter logs safely."
+        )),
         DT::DTOutput(ns("actions_table"))
       )
     )
