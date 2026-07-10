@@ -4697,7 +4697,7 @@
   },
   "files": {
     ".Rprofile": {
-      "checksum": "cd58059062d33722c07056543e15a9fe"
+      "checksum": "1d14691caff49e591b1de5487aae0956"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4724,16 +4724,16 @@
       "checksum": "21801d71ea8b2d02d71554310accf600"
     },
     "R/server-entity_page.R": {
-      "checksum": "356fbc31b44a0e0b91d9bf1db43e81b4"
+      "checksum": "8d8241fcdc5d2aa9bef5d7df0a92e543"
     },
     "R/server-event_catalog_page.R": {
-      "checksum": "26e4551031940ac9d51cd5a975cac101"
+      "checksum": "04909284480c781beb96abca188064e3"
     },
     "R/server-event_instance_page.R": {
-      "checksum": "dcfada587142a7bdfd40ba71c6fcb7e7"
+      "checksum": "d81312685ec5d5f3bc8b882b849f45ec"
     },
     "R/server-event_overview.R": {
-      "checksum": "c477cbb63e43053f61167d95170d8a86"
+      "checksum": "a567762c70f4ead19105b5e93a653c45"
     },
     "R/server-event_page.R": {
       "checksum": "7b130e6a7374118afcf20f50f575af80"
@@ -4745,7 +4745,7 @@
       "checksum": "9eb1cb0478479d84ea5ad959614b7d75"
     },
     "R/server-hub_overview.R": {
-      "checksum": "353e69549d4d525e3f5ea96bee960b58"
+      "checksum": "99b297fa93afafe8ab6e5d57d8b4f645"
     },
     "R/server-hub_support_page.R": {
       "checksum": "e787e495abd5c62f0aa7978732588efd"
@@ -4769,7 +4769,7 @@
       "checksum": "749d419530c40ab683fbb26a18d6d3ef"
     },
     "R/ui-event_instance_page.R": {
-      "checksum": "cd4ba1c472deb8fcc75596c090cbd86a"
+      "checksum": "459e320399d7a88612634f32914642b2"
     },
     "R/ui-event_type_blueprint_workspace.R": {
       "checksum": "39d12545ad65118d4c09969a0e14c53e"
@@ -4796,7 +4796,7 @@
       "checksum": "e382417adda141276efc0a7e410fe63c"
     },
     "R/ui_event_overview.R": {
-      "checksum": "92ea8994533d24ae2c8e3a52c46f5385"
+      "checksum": "57d2afc8362f671c0045b7a34a05abea"
     },
     "R/utils-bool.R": {
       "checksum": "09cfe08d00fe573e27e5ac00bedbb90e"
@@ -4825,6 +4825,9 @@
     "R/utils-names.R": {
       "checksum": "f060298f0f5d95219707d8fa0df62442"
     },
+    "R/utils-navigation_helpers.R": {
+      "checksum": "20e4a679be19e04dad12581ac896dc11"
+    },
     "R/utils-prepare_hub_schools_table.R": {
       "checksum": "eaf77b9fef427534e6613c3cb2bb968c"
     },
@@ -4837,6 +4840,9 @@
     "R/utils-safe_input.R": {
       "checksum": "6ab78019728f710d90d8c26101d27937"
     },
+    "R/utils-search_filters.R": {
+      "checksum": "a3b694b66bbf5a0cda50dd662bb0fe6d"
+    },
     "R/utils-strings.R": {
       "checksum": "2d23a9425c296f3bb8a844b4679698ee"
     },
@@ -4847,7 +4853,7 @@
       "checksum": "59066a7154514ca12f37072a06e84d6b"
     },
     "server.R": {
-      "checksum": "9287c3b8518363c10686ab1930335bd7"
+      "checksum": "1b382db6d6e458364e6018a00ab283e3"
     },
     "tests/testthat.R": {
       "checksum": "207024485a6d2e1472cab9200c3d851a"
@@ -4898,7 +4904,7 @@
       "checksum": "59bff53c4c7f207a614b7545902634c3"
     },
     "ui.R": {
-      "checksum": "3d87ad85a081018cabb79d97b5bf6bca"
+      "checksum": "e3b8d174867e767e7e21d733876126f1"
     }
   },
   "users": null
