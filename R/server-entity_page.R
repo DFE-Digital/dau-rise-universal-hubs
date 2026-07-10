@@ -445,16 +445,6 @@ server_entity_page <- function(
       ))
     )
 
-    observeEvent(input$event_timeline_dblclicked, {
-      req(input$event_timeline_dblclicked)
-      selected_urn(as.character(input$event_timeline_dblclicked))
-      updateNavbarPage(
-        session = main_navbar_session,
-        inputId = "main_navbar",
-        selected = "event_instance_page"
-      )
-    })
-
     observeEvent(input$add_new_event_transaction, {
       req(active_target$id, active_target$type)
 
@@ -590,7 +580,7 @@ server_entity_page <- function(
         } else if (identical(row$rueva_rule_type, "Boolean")) {
           checkboxInput(ns(input_id), label = label_text, value = FALSE)
         } else if (identical(row$rueva_rule_type, "Dropdown")) {
-          parsed_choices := trimws(strsplit(row$rueva_description, ",")[[1]])
+          parsed_choices <- trimws(strsplit(row$rueva_description, ",")[[1]])
           selectInput(
             ns(input_id),
             label = label_text,

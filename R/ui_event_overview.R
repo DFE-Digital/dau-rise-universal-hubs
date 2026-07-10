@@ -7,39 +7,18 @@ ui_event_overview <- function(id) {
     bslib::card(
       style = "border-top: 4px solid #005ea5; margin-bottom: 20px;",
       bslib::card_header(
-        class = "bg-light d-flex justify-content-between align-items-center",
-        style = "border-bottom: none; padding: 15px 20px;",
-        tags$span(
-          style = "font-size: 20px; font-weight: bold; color: #0b0c0c;",
-          "RISE Point-in-Time Event Profile Workspace"
-        ),
+        class = "bg-primary text-white d-flex justify-content-between align-items-center",
+        tags$span("Event Blueprint Hierarchy Workspace"),
         actionButton(
           ns("back_to_events_search"),
           "Return to Events Directory",
-          class = "btn btn-outline-dark btn-sm",
+          class = "btn btn-light btn-sm",
           icon = icon("arrow-left")
         )
       ),
-      bslib::card_body(
-        style = "padding: 10px 20px 20px 20px;",
-        div(
-          style = "display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;",
-          textInput(
-            ns("event_name_edit"),
-            "Modify Active Event Instance Context Title Name:",
-            width = "450px"
-          ),
-          actionButton(
-            ns("save_event_details"),
-            "Update Event Name Spec",
-            class = "btn btn-primary",
-            icon = icon("save"),
-            style = "margin-bottom: 15px; font-weight: bold;"
-          )
-        )
-      )
+      uiOutput(ns("type_meta_cards"))
     ),
-
+    br(),
     uiOutput(ns("event_stats_boxes")),
     br(),
 
@@ -71,7 +50,6 @@ ui_event_overview <- function(id) {
           )
         )
       ),
-
       column(
         6,
         bslib::card(
@@ -100,7 +78,6 @@ ui_event_overview <- function(id) {
     bslib::layout_column_wrap(
       width = 1 / 2,
       gap = "20px",
-
       bslib::card(
         bslib::card_header(
           class = "bg-dark text-white d-flex justify-content-between align-items-center",
@@ -120,7 +97,6 @@ ui_event_overview <- function(id) {
           DT::dataTableOutput(ns("event_types_table"))
         )
       ),
-
       bslib::card(
         bslib::card_header(
           class = "bg-primary text-white d-flex justify-content-between align-items-center",

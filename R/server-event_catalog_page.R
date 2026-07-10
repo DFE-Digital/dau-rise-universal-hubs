@@ -110,7 +110,7 @@ server_event_catalog_page <- function(
       updateNavbarPage(
         main_navbar_session,
         "main_navbar",
-        selected = "event_type_blueprint_workspace"
+        selected = "event_overview"
       )
     })
   })

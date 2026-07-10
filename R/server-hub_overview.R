@@ -250,6 +250,12 @@ server_hub_overview <- function(
           pageLength = 5,
           dom = 'tp',
           columnDefs = list(list(visible = FALSE, targets = 0:1))
+        ),
+        callback = DT::JS(
+          "table.on('dblclick', 'tr', function() {
+            var data = table.row(this).data();
+            if (data) Shiny.setInputValue('hub_overview_module-cohort_row_dblclicked', data[0], {priority: 'event'});
+          });"
         )
       ) |>
         DT::formatStyle(
@@ -282,7 +288,7 @@ server_hub_overview <- function(
       if (is.null(cat_id) || as.integer(cat_id) == 0) {
         query <- glue::glue_sql(
           "
-          SELECT [ruhbf_name], [ruhbf_rule_type], [ruhbf_required]
+          SELECT [ruhbf_id], [ruhbf_name], [ruhbf_rule_type], [ruhbf_required]
           FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
           WHERE [ruht_id] = 0 AND [ruhb_id] = {as.integer(selected_hub_id())};
           ",
@@ -291,7 +297,7 @@ server_hub_overview <- function(
       } else {
         query <- glue::glue_sql(
           "
-          SELECT [ruhbf_name], [ruhbf_rule_type], [ruhbf_required]
+          SELECT [ruhbf_id], [ruhbf_name], [ruhbf_rule_type], [ruhbf_required]
           FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
           WHERE [ruht_id] = {as.integer(cat_id)};
           ",
@@ -310,18 +316,198 @@ server_hub_overview <- function(
       DT::datatable(
         df,
         colnames = c(
+          "Field Record ID",
           "Action Input Field Label",
           "Data Format Type Validation Rule",
           "Mandatory Entry Requirement?"
         ),
         rownames = FALSE,
-        options = list(pageLength = 5, dom = "tp")
+        options = list(
+          pageLength = 5,
+          dom = "tp",
+          columnDefs = list(list(visible = FALSE, targets = 0))
+        ),
+        callback = DT::JS(
+          "table.on('dblclick', 'tr', function() {
+            var data = table.row(this).data();
+            if (data) Shiny.setInputValue('hub_overview_module-blueprint_row_dblclicked', data[0], {priority: 'event'});
+          });"
+        )
+      )
+    })
+
+    observeEvent(input$cohort_row_dblclicked, {
+      req(input$cohort_row_dblclicked)
+      cohort_id <- as.integer(input$cohort_row_dblclicked)
+
+      all_types <- dauPortalTools::db_ruh_get_support_types(
+        hub_id = selected_hub_id()
+      )
+      record <- all_types[all_types$ruht_id == cohort_id, ]
+      req(nrow(record) == 1)
+
+      editing_type_id(cohort_id)
+      show_support_type_modal(row_data = record)
+    })
+
+    observeEvent(input$blueprint_row_dblclicked, {
+      req(input$blueprint_row_dblclicked)
+      blueprint_id <- as.integer(input$blueprint_row_dblclicked)
+
+      conn <- dauPortalTools::sql_manager("dit")
+      on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
+
+      query <- glue::glue_sql(
+        "SELECT [ruhbf_id], [ruhbf_name], [ruhbf_description], [ruhbf_rule_type], [ruhbf_required] 
+         FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
+         WHERE [ruhbf_id] = {blueprint_id};",
+        .con = conn
+      )
+      record <- DBI::dbGetQuery(conn, query)
+      req(nrow(record) == 1)
+
+      showModal(modalDialog(
+        title = paste(
+          "Modify Complete Blueprint Action Field Rule Configuration"
+        ),
+        size = "m",
+        easyClose = TRUE,
+        footer = tagList(
+          modalButton("Cancel"),
+          actionButton(
+            ns("save_blueprint_edit"),
+            "Save Framework Updates",
+            class = "btn-success"
+          )
+        ),
+        tagList(
+          conditionalPanel(
+            "false",
+            textInput(
+              ns("edit_blueprint_id_hidden"),
+              label = "",
+              value = blueprint_id
+            )
+          ),
+
+          textInput(
+            inputId = ns("edit_blueprint_name_input"),
+            label = "Input Action Field Presentational Label Title:",
+            value = record$ruhbf_name
+          ),
+
+          selectInput(
+            inputId = ns("edit_blueprint_type_input"),
+            label = "Storage Format Type Validation Rule:",
+            choices = c(
+              "Text / String Input" = "Character",
+              "Numeric Integer" = "Integer",
+              "Calendar Date" = "Date",
+              "Binary Checkbox Toggle" = "Boolean",
+              "Dropdown Selection Menu" = "Dropdown"
+            ),
+            selected = record$ruhbf_rule_type
+          ),
+
+          shiny::conditionalPanel(
+            condition = sprintf(
+              "input['%s'] == 'Dropdown'",
+              ns("edit_blueprint_type_input")
+            ),
+            textAreaInput(
+              inputId = ns("edit_blueprint_dropdown_options"),
+              label = "Dropdown Menu Options (Comma-Separated):",
+              value = if (record$ruhbf_rule_type == "Dropdown") {
+                record$ruhbf_description
+              } else {
+                ""
+              },
+              placeholder = "e.g., Red, Amber, Green",
+              rows = 2
+            )
+          ),
+          br(),
+
+          shiny::conditionalPanel(
+            condition = sprintf(
+              "input['%s'] != 'Dropdown'",
+              ns("edit_blueprint_type_input")
+            ),
+            textAreaInput(
+              inputId = ns("edit_blueprint_desc_input"),
+              label = "Form Input Guideline Note Hint Text Context:",
+              value = if (record$ruhbf_rule_type != "Dropdown") {
+                record$ruhbf_description
+              } else {
+                ""
+              },
+              rows = 2,
+              placeholder = "Optional guidance instructions..."
+            )
+          ),
+
+          checkboxInput(
+            inputId = ns("edit_blueprint_req_input"),
+            label = "Force entry selection as mandatory requirement?",
+            value = as.logical(record$ruhbf_required)
+          )
+        )
+      ))
+    })
+
+    observeEvent(input$save_blueprint_edit, {
+      req(
+        input$edit_blueprint_id_hidden,
+        input$edit_blueprint_name_input,
+        input$edit_blueprint_type_input
+      )
+
+      conn <- dauPortalTools::sql_manager("dit")
+      on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
+
+      removeModal()
+
+      final_description <- if (input$edit_blueprint_type_input == "Dropdown") {
+        req(input$edit_blueprint_dropdown_options)
+        trimws(input$edit_blueprint_dropdown_options)
+      } else {
+        input$edit_blueprint_desc_input
+      }
+
+      query <- glue::glue_sql(
+        "UPDATE {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
+         SET 
+           [ruhbf_name] = {input$edit_blueprint_name_input},
+           [ruhbf_description] = {final_description},
+           [ruhbf_rule_type] = {input$edit_blueprint_type_input},
+           [ruhbf_required] = {if (input$edit_blueprint_req_input) 1 else 0},
+           [modified_date] = SYSUTCDATETIME(), -- Tracking audit timestamps
+           [modified_by] = {dauPortalTools::get_user(session)}
+         WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
+        .con = conn
+      )
+
+      tryCatch(
+        {
+          DBI::dbExecute(conn, query)
+          refresh_types(refresh_types() + 1)
+          showNotification(
+            "Blueprint core validation specifications updated successfully.",
+            type = "message"
+          )
+        },
+        error = function(e) {
+          showNotification(
+            paste("Database layout adjustment aborted:", e$message),
+            type = "error"
+          )
+        }
       )
     })
 
     show_support_type_modal <- function(row_data = NULL) {
       showModal(modalDialog(
-        title = if (is.null(row_data)) {
+        title = if (is.null(editing_type_id())) {
           "Register Support Category / Cohort"
         } else {
           paste("Modify Schema Mode:", row_data$ruht_name)
@@ -460,9 +646,9 @@ server_hub_overview <- function(
         VALUES (
           {as.integer(active_category_id())}, 
           {as.integer(selected_hub_id())}, 
-          0,                               
+          0,                                 
           {input$field_name}, 
-          {final_description}, -- Stores comma-separated choices for dropdowns
+          {final_description}, 
           {input$field_type}, 
           {if (input$field_req) 1 else 0}, 
           1, 

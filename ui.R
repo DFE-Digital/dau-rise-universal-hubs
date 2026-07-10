@@ -100,8 +100,8 @@ ui <- bslib::page_fluid(
     # --- Event Panel ---
     bslib::nav_panel(
       title = "Event Page",
-      value = "universal_event_instance_page",
-      ui_event_instance_page("event_instance_panel")
+      value = "event_instance_page",
+      ui_event_instance_page("event_instance_page")
     ),
 
     # --- Hubs Search Panel ---
@@ -148,8 +148,8 @@ ui <- bslib::page_fluid(
     # --- Event Workspace Blueprint Sub-Panel ---
     bslib::nav_panel(
       title = "Event Overview Page",
-      value = "event_type_blueprint_workspace",
-      ui_event_type_blueprint_workspace("event_type_blueprint_workspace")
+      value = "event_overview",
+      ui_event_overview("event_overview")
     ),
 
     # --- Global Support Guide Page ---
