@@ -1226,7 +1226,7 @@
     },
     "dauPortalTools": {
       "Package": "dauPortalTools",
-      "Version": "2026.7.0",
+      "Version": "2026.7.1",
       "Source": "GitHub",
       "Title": "Data Analysis Unit Portal Tools",
       "Authors@R": "c(person(\"Ben\",\"Smith\",email=\"ben7.smith@education.gov.uk\",role=c(\"aut\",\"cre\")), person(\"Ben\",\"Clewarth\",email=\"ben.clewarth@education.gov.uk\",role=\"aut\"), person(\"Mark\",\"Horton\",email=\"mark.horton@education.gov.uk\",role=\"aut\"))",
@@ -1262,11 +1262,11 @@
       "Maintainer": "Ben Smith <ben7.smith@education.gov.uk>",
       "RemoteType": "github",
       "Remotes": "dfe-analytical-services/shinyGovstyle",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "dfe-digital",
       "RemoteRepo": "dauPortalTools",
       "RemoteRef": "main",
-      "RemoteSha": "f82de92da2b9768ba56dec4ef57d31e22e977f94"
+      "RemoteSha": "048c9c179514202e803d8b3e5aa0417eb66e897c",
+      "RemoteHost": "api.github.com"
     },
     "desc": {
       "Package": "desc",

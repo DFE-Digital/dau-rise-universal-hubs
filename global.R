@@ -34,4 +34,4 @@ if (length(dup_labels) > 0) {
   )
 }
 
-dauPortalTools::log_event("Sig Change Portal configuration loaded")
+dauPortalTools::log_event("RISE Universal Portal configuration loaded")
