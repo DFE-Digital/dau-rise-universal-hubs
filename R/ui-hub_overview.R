@@ -44,54 +44,54 @@ ui_hub_overview <- function(id) {
     br(),
 
     fluidRow(
-      column(
-        6,
-        bslib::card(
-          style = "margin-bottom: 25px;",
-          bslib::card_header(
-            class = "bg-secondary text-white d-flex justify-content-between align-items-center",
-            tags$span(
-              style = "font-weight: bold;",
-              "Tracked Institutional Allocations (Provisions)"
-            ),
-            checkboxInput(
-              ns("include_inactive"),
-              "Show Inactive",
-              value = FALSE
-            )
+      bslib::card(
+        style = "margin-bottom: 25px;",
+        bslib::card_header(
+          class = "bg-secondary text-white d-flex justify-content-between align-items-center",
+          tags$span(
+            style = "font-weight: bold;",
+            "Entities Supported by Hub"
           ),
-          div(
-            style = "padding: 15px; height: 380px; overflow-y: auto;",
-            DT::dataTableOutput(ns("hub_support_schools_table"))
-          ),
-          tags$div(
-            class = "govuk-hint",
-            style = "padding: 0 15px 15px 15px; font-size: 13px;",
-            "💡 Double-click any row to jump straight to that Entity Target Details page."
+          checkboxInput(
+            ns("include_inactive_support"),
+            "Show Inactive",
+            value = FALSE
           )
+        ),
+        div(
+          style = "padding: 15px; height: 380px; overflow-y: auto;",
+          DT::dataTableOutput(ns("hub_support_schools_table"))
+        ),
+        tags$div(
+          class = "govuk-hint",
+          style = "padding: 0 15px 15px 15px; font-size: 13px;",
+          "💡 Double-click any row to jump directly to its details."
         )
-      ),
-
-      column(
-        6,
-        bslib::card(
-          style = "margin-bottom: 25px;",
-          bslib::card_header(
-            class = "bg-dark text-white",
-            tags$span(
-              style = "font-weight: bold;",
-              "Designated Lead Providers & System Supporters"
-            )
+      )
+    ),
+    fluidRow(
+      bslib::card(
+        style = "margin-bottom: 25px;",
+        bslib::card_header(
+          class = "bg-secondary text-white d-flex justify-content-between align-items-center",
+          tags$span(
+            style = "font-weight: bold;",
+            "Entities Supporting Delivery"
           ),
-          div(
-            style = "padding: 15px; height: 380px; overflow-y: auto;",
-            DT::dataTableOutput(ns("hub_lead_providers_table"))
-          ),
-          tags$div(
-            class = "govuk-hint",
-            style = "padding: 0 15px 15px 15px; font-size: 13px;",
-            "💡 Double-click any provider row to jump directly to its Lead Assignment details dashboard."
+          checkboxInput(
+            ns("include_inactive_leads"),
+            "Show Inactive",
+            value = FALSE
           )
+        ),
+        div(
+          style = "padding: 15px; height: 380px; overflow-y: auto;",
+          DT::dataTableOutput(ns("hub_lead_providers_table"))
+        ),
+        tags$div(
+          class = "govuk-hint",
+          style = "padding: 0 15px 15px 15px; font-size: 13px;",
+          "💡 Double-click any row to jump directly to its details."
         )
       )
     ),

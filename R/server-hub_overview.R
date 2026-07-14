@@ -1,3 +1,48 @@
+#' Local Helper: Resolve presentational names for various receiver entities
+#' @param entity_type Character scalar (e.g., 'School', 'Trust', 'LA', 'Diocese')
+#' @param entity_ids Character vector of URNs, UID codes, or LA numbers
+#' @return A named character vector mapping IDs to Names
+local_resolve_entity_names <- function(entity_type, entity_ids) {
+  if (length(entity_ids) == 0) {
+    return(character(0))
+  }
+
+  conn <- dauPortalTools::sql_manager("dit")
+  on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
+
+  type <- tolower(trimws(entity_type))
+
+  unique_ids <- unique(entity_ids)
+  id_list <- paste0("'", unique_ids, "'", collapse = ",")
+
+  if (type == "school") {
+    query <- glue::glue(
+      "SELECT [urn] AS [id], [school_name] AS [name] FROM {utils_resolve_schema('db_schema_01r')}.[vw_ru_search_schools] WHERE [urn] IN ({id_list});"
+    )
+  } else if (type == "trust") {
+    query <- glue::glue(
+      "SELECT [trust_id] AS [id], [trust_name] AS [name] FROM {utils_resolve_schema('db_schema_01r')}.[vw_ru_search_trusts] WHERE [UID] IN ({id_list});"
+    )
+  } else if (type == "la") {
+    query <- glue::glue(
+      "SELECT [la_code] AS [id], [la_name] AS [name] FROM {utils_resolve_schema('db_schema_01r')}.[vw_ru_search_la] WHERE [LA_Code] IN ({id_list});"
+    )
+  } else if (type == "diocese") {
+    query <- glue::glue(
+      "SELECT [diocese_id] AS [id], [diocese_name] AS [name] FROM {utils_resolve_schema('db_schema_01r')}.[vw_ru_search_diocese] WHERE [Diocese_Code] IN ({id_list});"
+    )
+  } else {
+    return(setNames(unique_ids, unique_ids))
+  }
+
+  res <- tryCatch(DBI::dbGetQuery(conn, query), error = function(e) NULL)
+  if (is.null(res) || nrow(res) == 0) {
+    return(setNames(unique_ids, unique_ids))
+  }
+
+  setNames(res$name, res$id)
+}
+
 #' Hub Detailed Configuration Overview Panel Server
 #'
 #' @param id Character scalar. Shiny namespace identifier.
@@ -91,13 +136,13 @@ server_hub_overview <- function(
         gap = "15px",
         fill = FALSE,
         bslib::value_box(
-          title = "Active Supported Entities",
+          title = "Active Supported",
           value = active_supported,
           showcase = icon("check-circle"),
           theme = "primary"
         ),
         bslib::value_box(
-          title = "All-Time Provision Footprint",
+          title = "All-Time Supported",
           value = all_time_supported,
           showcase = icon("history"),
           theme = "secondary"
@@ -128,12 +173,31 @@ server_hub_overview <- function(
           "Status" = "No matching contract allocations recorded under this hub domain."
         ))
       }
-      if (!input$include_inactive) {
+      if (!input$include_inactive_support) {
         df <- df |> dplyr::filter(ruhsr_active == 1)
       }
       if (nrow(df) == 0) {
         return(data.frame("Status" = "No matching active allocations found."))
       }
+
+      df$ruhsr_entity_name <- NA_character_
+      unique_types <- unique(df$ruhsr_entity_type)
+
+      for (etype in unique_types) {
+        sub_rows <- which(df$ruhsr_entity_type == etype)
+        ids_to_resolve <- df$ruhsr_entity_id[sub_rows]
+        name_map <- local_resolve_entity_names(etype, ids_to_resolve)
+
+        df$ruhsr_entity_name[
+          sub_rows
+        ] <- name_map[as.character(df$ruhsr_entity_id[sub_rows])]
+      }
+
+      df$ruhsr_entity_name <- ifelse(
+        is.na(df$ruhsr_entity_name) | df$ruhsr_entity_name == "",
+        df$ruhsr_entity_id,
+        df$ruhsr_entity_name
+      )
 
       DT::datatable(
         df |>
@@ -141,15 +205,17 @@ server_hub_overview <- function(
             ruhsr_id,
             ruhsr_entity_type,
             ruhsr_entity_id,
+            ruhsr_entity_name,
             support_type_name,
             ruhsr_dateactive
           ),
         colnames = c(
-          "Support Provision ID",
-          "Entity Node Type",
-          "Receiver Identity Code/URN",
-          "Framework Framework Type",
-          "Initialization Date"
+          "Record ID",
+          "Type",
+          "ID/URN",
+          "Name",
+          "Cohort/Framework",
+          "Start Date"
         ),
         selection = "single",
         rownames = FALSE,
@@ -175,6 +241,10 @@ server_hub_overview <- function(
         ))
       }
 
+      if (!input$include_inactive_leads) {
+        leads_df <- leads_df |> dplyr::filter(ruhl_active == 1)
+      }
+
       compiled_rows <- lapply(seq_len(nrow(leads_df)), function(i) {
         lead <- leads_df[i, ]
         cohorts <- dauPortalTools::db_ruh_get_lead_cohorts(
@@ -190,16 +260,25 @@ server_hub_overview <- function(
         )
         case_count <- if (is.null(cases)) 0 else nrow(cases)
 
+        resolved_name_vec <- local_resolve_entity_names(
+          lead$lead_entity_type,
+          lead$lead_entity_id
+        )
+        resolved_name <- resolved_name_vec[as.character(lead$lead_entity_id)]
+
+        display_name <- if (!is.na(resolved_name) && nzchar(resolved_name)) {
+          resolved_name
+        } else {
+          lead$lead_entity_id
+        }
+
         data.frame(
           ruhls_id = lead$ruhls_id,
-          provider_name = paste0(
-            lead$lead_entity_type,
-            ": ",
-            lead$lead_entity_id
-          ),
+          type = lead$lead_entity_type,
+          provider_code = lead$lead_entity_id,
+          provider_name = display_name,
           cohorts = cohort_str,
           caseload = case_count,
-          status = if (lead$ruhl_active == 1) "Active" else "Concluded",
           stringsAsFactors = FALSE
         )
       }) |>
@@ -208,11 +287,12 @@ server_hub_overview <- function(
       DT::datatable(
         compiled_rows,
         colnames = c(
-          "Master Track ID",
-          "Lead Provider Name/Identity",
-          "Assigned Cohort Scopes",
-          "Entities Supported",
-          "Operational Status"
+          "Record ID",
+          "Type",
+          "ID/URN",
+          "Name",
+          "Cohort/Framework",
+          "Entities Supported"
         ),
         selection = "single",
         rownames = FALSE,
@@ -317,9 +397,9 @@ server_hub_overview <- function(
         df,
         colnames = c(
           "Field Record ID",
-          "Action Input Field Label",
-          "Data Format Type Validation Rule",
-          "Mandatory Entry Requirement?"
+          "Name",
+          "Data Type",
+          "Required?"
         ),
         rownames = FALSE,
         options = list(
