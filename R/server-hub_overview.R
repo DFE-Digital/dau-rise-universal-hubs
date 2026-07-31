@@ -563,15 +563,15 @@ server_hub_overview <- function(
 
       query <- glue::glue_sql(
         "UPDATE {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
-   SET 
-     [ruhbf_name] = {input$edit_blueprint_name_input},
-     [ruhbf_description] = {desc_val},
-     [ruhbf_dropdown_options] = {dropdown_val},
-     [ruhbf_rule_type] = {input$edit_blueprint_type_input},
-     [ruhbf_required] = {as.integer(isTRUE(input$edit_blueprint_req_input))},
-     [modified_date] = SYSUTCDATETIME(),
-     [modified_by] = {dauPortalTools::get_user(session)}
-   WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
+         SET 
+           [ruhbf_name] = {input$edit_blueprint_name_input},
+           [ruhbf_description] = {desc_val},
+           [ruhbf_dropdown_options] = {dropdown_val},
+           [ruhbf_rule_type] = {input$edit_blueprint_type_input},
+           [ruhbf_required] = {as.integer(isTRUE(input$edit_blueprint_req_input))},
+           [modified_date] = SYSUTCDATETIME(),
+           [modified_by] = {dauPortalTools::get_user(session)}
+         WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
         .con = conn
       )
 
@@ -721,6 +721,27 @@ server_hub_overview <- function(
 
       removeModal()
 
+      desc_val <- if (
+        is.null(input$field_desc) || !nzchar(trimws(input$field_desc))
+      ) {
+        NA
+      } else {
+        trimws(input$field_desc)
+      }
+
+      dropdown_val <- if (input$field_type == 'Dropdown') {
+        if (
+          is.null(input$field_dropdown_options) ||
+            !nzchar(trimws(input$field_dropdown_options))
+        ) {
+          NA
+        } else {
+          trimws(input$field_dropdown_options)
+        }
+      } else {
+        NA
+      }
+
       query <- glue::glue_sql(
         "
         INSERT INTO {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] 
@@ -730,8 +751,8 @@ server_hub_overview <- function(
           {as.integer(selected_hub_id())}, 
           0,                                   
           {input$field_name}, 
-          {NULLIF(input$field_desc, '')}, 
-          {if(input$field_type == 'Dropdown') NULLIF(input$field_dropdown_options, '') else NA}, 
+          {desc_val}, 
+          {dropdown_val}, 
           {input$field_type}, 
           {as.integer(isTRUE(input$field_req))}, 
           1, 
