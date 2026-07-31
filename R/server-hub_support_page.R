@@ -465,7 +465,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
           SELECT [ruhbf_id], [ruhbf_name] + CASE WHEN [ruht_id] = 0 THEN ' (Hub Global)' ELSE ' (Cohort Metric)' END AS [display_label]
           FROM {utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] 
           WHERE [ruht_id] = {as.integer(contract$ruht_id)} 
-             OR ([ruht_id] = 0 AND [ruhb_id] = {as.integer(contract$ruhb_id)}); -- Clean relational match
+             OR ([ruht_id] = 0 AND [ruhb_id] = {as.integer(contract$ruhb_id)});
           ",
           .con = conn
         )
@@ -520,7 +520,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
       selected_field <- DBI::dbGetQuery(
         conn,
         glue::glue_sql(
-          "SELECT [ruhbf_rule_type], [ruhbf_description] FROM {utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] WHERE [ruhbf_id] = {as.integer(input$modal_exec_field_id)};",
+          "SELECT [ruhbf_rule_type], [ruhbf_description], [ruhbf_dropdown_options] FROM {utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] WHERE [ruhbf_id] = {as.integer(input$modal_exec_field_id)};",
           .con = conn
         )
       )
@@ -543,9 +543,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
               tags$strong(icon("info-circle"), " Blueprint Guidance Notes:"),
               p(
                 style = "margin: 5px 0 0 0; font-size: 0.95em;",
-                if (rule_type == "Dropdown") {
-                  "Select a value from the dropdown options pre-configured by your manager."
-                } else if (
+                if (
                   !is.null(selected_field$ruhbf_description[1]) &&
                     nzchar(selected_field$ruhbf_description[1])
                 ) {
@@ -586,7 +584,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
                 value = FALSE
               )
             } else if (identical(rule_type, "Dropdown")) {
-              raw_options <- selected_field$ruhbf_description[1]
+              raw_options <- selected_field$ruhbf_dropdown_options[1] %||% ""
               parsed_choices <- trimws(strsplit(raw_options, ",")[[1]])
               selectInput(
                 ns("modal_exec_value_text"),
@@ -687,7 +685,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
          ([ruhs_id], [ruha_id], [ruhsa_date], [ruhsa_comment], [date_created], [user_id_created])
          VALUES (
            {as.integer(selected_support_id())}, 
-           {as.integer(input$modal_exec_field_id)}, -- Correctly maps down to the chosen blueprint field ID
+           {as.integer(input$modal_exec_field_id)}, 
            {format(as.Date(input$modal_exec_date), '%Y-%m-%d')}, 
            {final_comment_entry}, 
            SYSUTCDATETIME(), 
@@ -712,7 +710,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
       query <- glue::glue_sql(
-        "SELECT sa.[ruhsa_id], sa.[ruha_id], sa.[ruhsa_date], sa.[ruhsa_comment], bf.[ruhbf_name], bf.[ruhbf_description], bf.[ruhbf_rule_type]
+        "SELECT sa.[ruhsa_id], sa.[ruha_id], sa.[ruhsa_date], sa.[ruhsa_comment], bf.[ruhbf_name], bf.[ruhbf_description], bf.[ruhbf_dropdown_options], bf.[ruhbf_rule_type]
          FROM {utils_resolve_schema('db_schema_01r')}.[ruh_support_school_actions] sa
          INNER JOIN {utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] bf ON sa.[ruha_id] = bf.[ruhbf_id]
          WHERE sa.[ruhsa_id] = {row_id};",
@@ -827,7 +825,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
                   value = identical(parsed_val, "True")
                 )
               } else if (identical(rule_type, "Dropdown")) {
-                raw_options <- exec_df$ruhbf_description[1]
+                raw_options <- exec_df$ruhbf_dropdown_options[1] %||% ""
                 parsed_choices <- trimws(strsplit(raw_options, ",")[[1]])
                 selectInput(
                   ns("modal_edit_value_text"),
@@ -919,12 +917,12 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
 
       query <- glue::glue_sql(
         "UPDATE {utils_resolve_schema('db_schema_01r')}.[ruh_support_school_actions]
-         SET [ruha_id]        = {action_id},
-             [ruhsa_date]     = {format(as.Date(input$modal_edit_date), '%Y-%m-%d')},
+         SET [ruha_id]    = {action_id},
+             [ruhsa_date]   = {format(as.Date(input$modal_edit_date), '%Y-%m-%d')},
              [ruhsa_comment]  = {final_comment_entry},
              [date_edited]    = SYSUTCDATETIME(),
              [user_id_edited] = {current_user}
-         WHERE [ruhsa_id]     = {row_id};",
+         WHERE [ruhsa_id]   = {row_id};",
         .con = conn
       )
       DBI::dbExecute(conn, query)
