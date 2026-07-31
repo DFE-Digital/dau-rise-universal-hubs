@@ -1229,19 +1229,19 @@
         "VignetteBuilder": "knitr",
         "Author": "Ben Smith [aut, cre],\n  Ben Clewarth [aut],\n  Mark Horton [aut]",
         "Maintainer": "Ben Smith <ben7.smith@education.gov.uk>",
-        "Built": "R 4.5.3; ; 2026-07-31 16:12:11 UTC; windows",
+        "Built": "R 4.5.3; ; 2026-07-31 16:33:18 UTC; windows",
         "RemoteType": "github",
         "Remotes": "dfe-analytical-services/shinyGovstyle",
         "RemoteUsername": "dfe-digital",
         "RemoteRepo": "dauPortalTools",
         "RemoteRef": "main",
-        "RemoteSha": "0e4f8d1d0e36c39aaa291ddf4ab8f10225751c87",
+        "RemoteSha": "77f5230ec62986061f4b88a40a9d8a0850750408",
         "RemoteHost": "api.github.com",
         "GithubHost": "api.github.com",
         "GithubRepo": "dauPortalTools",
         "GithubUsername": "dfe-digital",
         "GithubRef": "main",
-        "GithubSHA1": "0e4f8d1d0e36c39aaa291ddf4ab8f10225751c87"
+        "GithubSHA1": "77f5230ec62986061f4b88a40a9d8a0850750408"
       }
     },
     "desc": {
@@ -4716,7 +4716,7 @@
       "checksum": "88e2ecc215ab2465f13a201320afe75b"
     },
     ".Rprofile": {
-      "checksum": "13fcd016bd7d15472b80a4cd52abf29f"
+      "checksum": "a1cd6a3f19d26118080b09d250dc66aa"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4905,7 +4905,7 @@
       "checksum": "fcf47297a3619928bfe5e50324e82d9b"
     },
     "renv.lock": {
-      "checksum": "2b0cc187f85a00752d67ac5648005f7d"
+      "checksum": "10682ad248c2d1e2246ce11e8ad59bdb"
     },
     "server.R": {
       "checksum": "b21f732570dd2b4e6c702b49b1eb11a1"
