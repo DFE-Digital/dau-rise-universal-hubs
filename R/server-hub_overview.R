@@ -494,20 +494,7 @@ server_hub_overview <- function(
             selected = record$ruhbf_rule_type
           ),
 
-          shiny::conditionalPanel(
-            condition = sprintf(
-              "input['%s'] == 'Dropdown'",
-              ns("edit_blueprint_type_input")
-            ),
-            ns = ns,
-            textAreaInput(
-              inputId = ns("edit_blueprint_dropdown_options"),
-              label = "Dropdown Menu Options (Comma-Separated):",
-              value = record$ruhbf_dropdown_options %||% "",
-              placeholder = "e.g., Red, Amber, Green",
-              rows = 2
-            )
-          ),
+          uiOutput(ns("edit_dynamic_dropdown_options_wrapper")),
           br(),
 
           textAreaInput(
@@ -525,6 +512,36 @@ server_hub_overview <- function(
           )
         )
       ))
+    })
+
+    output$edit_dynamic_dropdown_options_wrapper <- renderUI({
+      req(input$edit_blueprint_type_input)
+      if (input$edit_blueprint_type_input == "Dropdown") {
+        blueprint_id <- isolate(input$edit_blueprint_id_hidden)
+        current_val <- ""
+        if (!is.null(blueprint_id) && nzchar(blueprint_id)) {
+          conn <- dauPortalTools::sql_manager("dit")
+          on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
+          res <- DBI::dbGetQuery(
+            conn,
+            glue::glue_sql(
+              "SELECT [ruhbf_dropdown_options] FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] WHERE [ruhbf_id] = {as.integer(blueprint_id)};",
+              .con = conn
+            )
+          )
+          if (nrow(res) > 0) {
+            current_val <- res$ruhbf_dropdown_options[1] %||% ""
+          }
+        }
+
+        textAreaInput(
+          ns("edit_blueprint_dropdown_options"),
+          "Dropdown Menu Options (Comma-Separated):",
+          value = current_val,
+          placeholder = "e.g., Red, Amber, Green",
+          rows = 2
+        )
+      }
     })
 
     observeEvent(input$save_blueprint_edit, {
@@ -687,16 +704,7 @@ server_hub_overview <- function(
             )
           ),
 
-          shiny::conditionalPanel(
-            condition = sprintf("input['%s'] == 'Dropdown'", ns("field_type")),
-            ns = ns,
-            textAreaInput(
-              ns("field_dropdown_options"),
-              "Dropdown Menu Options (Comma-Separated):",
-              placeholder = "e.g., Red, Amber, Green",
-              rows = 2
-            )
-          ),
+          uiOutput(ns("add_dynamic_dropdown_options_wrapper")),
           br(),
           textAreaInput(
             ns("field_desc"),
@@ -711,6 +719,18 @@ server_hub_overview <- function(
           )
         )
       ))
+    })
+
+    output$add_dynamic_dropdown_options_wrapper <- renderUI({
+      req(input$field_type)
+      if (input$field_type == "Dropdown") {
+        textAreaInput(
+          ns("field_dropdown_options"),
+          "Dropdown Menu Options (Comma-Separated):",
+          placeholder = "e.g., Red, Amber, Green",
+          rows = 2
+        )
+      }
     })
 
     observeEvent(input$save_hub_field, {

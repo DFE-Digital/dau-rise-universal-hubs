@@ -341,6 +341,7 @@ server_event_overview <- function(
           "Data Format Type Validation Rule",
           "Mandatory Entry Requirement?"
         ),
+        selection = "single",
         rownames = FALSE,
         options = list(
           pageLength = 5,
@@ -424,20 +425,7 @@ server_event_overview <- function(
             ),
             selected = record$rueva_rule_type
           ),
-          shiny::conditionalPanel(
-            condition = sprintf(
-              "input['%s'] == 'Dropdown'",
-              ns("edit_event_blueprint_type_input")
-            ),
-            ns = ns,
-            textAreaInput(
-              ns("edit_event_blueprint_dropdown_options"),
-              "Dropdown Menu Options (Comma-Separated):",
-              value = record$rueva_dropdown_options %||% "",
-              placeholder = "e.g., Attended, Apologies",
-              rows = 2
-            )
-          ),
+          uiOutput(ns("edit_dynamic_dropdown_options_wrapper")),
           br(),
           textAreaInput(
             ns("edit_event_blueprint_desc_input"),
@@ -453,6 +441,37 @@ server_event_overview <- function(
           )
         )
       ))
+    })
+
+    output$edit_dynamic_dropdown_options_wrapper <- renderUI({
+      req(input$edit_event_blueprint_type_input)
+      if (input$edit_event_blueprint_type_input == "Dropdown") {
+        # Fetch current record context or fallback gracefully
+        blueprint_id <- isolate(input$edit_event_blueprint_id_hidden)
+        current_val <- ""
+        if (!is.null(blueprint_id) && nzchar(blueprint_id)) {
+          conn <- dauPortalTools::sql_manager("dit")
+          on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
+          res <- DBI::dbGetQuery(
+            conn,
+            glue::glue_sql(
+              "SELECT [rueva_dropdown_options] FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ru_event_actions] WHERE [rueva_id] = {as.integer(blueprint_id)};",
+              .con = conn
+            )
+          )
+          if (nrow(res) > 0) {
+            current_val <- res$rueva_dropdown_options[1] %||% ""
+          }
+        }
+
+        textAreaInput(
+          ns("edit_event_blueprint_dropdown_options"),
+          "Dropdown Menu Options (Comma-Separated):",
+          value = current_val,
+          placeholder = "e.g., Attended, Apologies",
+          rows = 2
+        )
+      }
     })
 
     observeEvent(input$save_event_blueprint_full_edit, {
@@ -604,16 +623,7 @@ server_event_overview <- function(
               "Dropdown Selection Menu" = "Dropdown"
             )
           ),
-          shiny::conditionalPanel(
-            condition = sprintf("input['%s'] == 'Dropdown'", ns("field_type")),
-            ns = ns,
-            textAreaInput(
-              ns("field_dropdown_options"),
-              "Dropdown Menu Options (Comma-Separated):",
-              placeholder = "e.g., Attended, Apologies",
-              rows = 2
-            )
-          ),
+          uiOutput(ns("add_dynamic_dropdown_options_wrapper")),
           br(),
           textAreaInput(
             ns("field_desc"),
@@ -628,6 +638,18 @@ server_event_overview <- function(
           )
         )
       ))
+    })
+
+    output$add_dynamic_dropdown_options_wrapper <- renderUI({
+      req(input$field_type)
+      if (input$field_type == "Dropdown") {
+        textAreaInput(
+          ns("field_dropdown_options"),
+          "Dropdown Menu Options (Comma-Separated):",
+          placeholder = "e.g., Attended, Apologies",
+          rows = 2
+        )
+      }
     })
 
     observeEvent(input$save_event_field, {
