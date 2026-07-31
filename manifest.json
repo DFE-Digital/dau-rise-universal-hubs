@@ -1217,7 +1217,7 @@
       "description": {
         "Package": "dauPortalTools",
         "Title": "Data Analysis Unit Portal Tools",
-        "Version": "2026.7.1",
+        "Version": "2026.7.3",
         "Authors@R": "c(person(\"Ben\",\"Smith\",email=\"ben7.smith@education.gov.uk\",role=c(\"aut\",\"cre\")),\n             person(\"Ben\",\"Clewarth\",email=\"ben.clewarth@education.gov.uk\",role=\"aut\"),\n             person(\"Mark\",\"Horton\",email=\"mark.horton@education.gov.uk\",role=\"aut\"))",
         "Description": "Utility functions and UI components for RG DAUs Portals.",
         "License": "Proprietary",
@@ -1225,22 +1225,23 @@
         "Roxygen": "list(markdown = TRUE)",
         "RoxygenNote": "8.0.0",
         "Imports": "bslib,\nconfig,\nDBI,\ndplyr,\nDT,\nforcats,\nggplot2,\nglue,\ngt,\nhtmltools,\njsonlite,\nodbc,\nplotly,\nshiny,\nshinyGovstyle,\nstringr,\nyaml",
-        "Suggests": "RSQLite,\ntestthat",
+        "Suggests": "knitr,\nrmarkdown,\nRSQLite,\ntestthat",
+        "VignetteBuilder": "knitr",
         "Author": "Ben Smith [aut, cre],\n  Ben Clewarth [aut],\n  Mark Horton [aut]",
         "Maintainer": "Ben Smith <ben7.smith@education.gov.uk>",
-        "Built": "R 4.5.3; ; 2026-07-10 10:54:41 UTC; windows",
+        "Built": "R 4.5.3; ; 2026-07-31 16:12:11 UTC; windows",
         "RemoteType": "github",
         "Remotes": "dfe-analytical-services/shinyGovstyle",
         "RemoteUsername": "dfe-digital",
         "RemoteRepo": "dauPortalTools",
         "RemoteRef": "main",
-        "RemoteSha": "048c9c179514202e803d8b3e5aa0417eb66e897c",
+        "RemoteSha": "0e4f8d1d0e36c39aaa291ddf4ab8f10225751c87",
         "RemoteHost": "api.github.com",
         "GithubHost": "api.github.com",
         "GithubRepo": "dauPortalTools",
         "GithubUsername": "dfe-digital",
         "GithubRef": "main",
-        "GithubSHA1": "048c9c179514202e803d8b3e5aa0417eb66e897c"
+        "GithubSHA1": "0e4f8d1d0e36c39aaa291ddf4ab8f10225751c87"
       }
     },
     "desc": {
@@ -4715,7 +4716,7 @@
       "checksum": "88e2ecc215ab2465f13a201320afe75b"
     },
     ".Rprofile": {
-      "checksum": "20a7e68f5cbcf5f2efe8d11d772d154b"
+      "checksum": "13fcd016bd7d15472b80a4cd52abf29f"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4904,7 +4905,7 @@
       "checksum": "fcf47297a3619928bfe5e50324e82d9b"
     },
     "renv.lock": {
-      "checksum": "59066a7154514ca12f37072a06e84d6b"
+      "checksum": "2b0cc187f85a00752d67ac5648005f7d"
     },
     "server.R": {
       "checksum": "b21f732570dd2b4e6c702b49b1eb11a1"
