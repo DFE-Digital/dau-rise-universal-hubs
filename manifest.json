@@ -4696,8 +4696,26 @@
     }
   },
   "files": {
+    ".github/ISSUE_TEMPLATE/bug_report.md": {
+      "checksum": "cca1ec7f54dc8399015b4ba0de62c44b"
+    },
+    ".github/ISSUE_TEMPLATE/docs_update.md": {
+      "checksum": "b3f3f7667cd7214b5b27c884d4bb7a5e"
+    },
+    ".github/ISSUE_TEMPLATE/feature_request.md": {
+      "checksum": "78db9f2c20078326446c789ebe1b37ee"
+    },
+    ".github/ISSUE_TEMPLATE/refactor.md": {
+      "checksum": "3e6401534538545fd42f3549c159f57a"
+    },
+    ".github/ISSUE_TEMPLATE/task.md": {
+      "checksum": "597d0dddc9aa9b5195570c91821e22f6"
+    },
+    ".github/pull_request_template.md": {
+      "checksum": "88e2ecc215ab2465f13a201320afe75b"
+    },
     ".Rprofile": {
-      "checksum": "1d14691caff49e591b1de5487aae0956"
+      "checksum": "5b4877751ff1e1e37dbdb028b551f0ed"
     },
     "app.R": {
       "checksum": "7d0d815a5e09574db77b326bf4e2ae53"
@@ -4709,7 +4727,43 @@
       "checksum": "b6ba2a889fe55237f2bf7a932b0f9946"
     },
     "config.yml": {
-      "checksum": "846a08cd824dcda36f23768e4b59216a"
+      "checksum": "d07a5bc63815c24bc878935dbc552c93"
+    },
+    "documentation/00_index.md": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "documentation/01_overview.md": {
+      "checksum": "2f1d3d4b85ffef801379afd3be5b026b"
+    },
+    "documentation/02_policy_background.md": {
+      "checksum": "e1280793ace0fde1397e91139a9df9c8"
+    },
+    "documentation/03_governance.md": {
+      "checksum": "62e6017e2ff1cd3ca8cbb25f1193001d"
+    },
+    "documentation/04_definitions.md": {
+      "checksum": "b5f15e941736154b1aabe78d16580bd9"
+    },
+    "documentation/05_engagement.md": {
+      "checksum": "3b2c74cc1410dd0b9e5c8e166bea9a05"
+    },
+    "documentation/06_architecture.md": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "documentation/07_hubs_data_flow.md": {
+      "checksum": "ffda9bb8a682a4aadd7058193b30f617"
+    },
+    "documentation/08_ru_data_flow.md": {
+      "checksum": "9e54fd6f6204239a7fecbfa8a186d899"
+    },
+    "documentation/09_qa_process.md": {
+      "checksum": "bf1bd44b518e400412bcd6d0cb936cba"
+    },
+    "documentation/10_caveats.md": {
+      "checksum": "505c2b93642175941060f713feb6d907"
+    },
+    "documentation/11_links.md": {
+      "checksum": "5783087d4a5033bb05166014f20ba310"
     },
     "global.R": {
       "checksum": "8d38d616f73edd42e73cd76ede099714"
@@ -4718,22 +4772,22 @@
       "checksum": "ba2a78ee4940fb25a78a26bf90237f99"
     },
     "R/server-admin_rise_actions.R": {
-      "checksum": "c9b09a19917703f8c5a8071a341d2b50"
+      "checksum": "f8187424d1fa463c855f6115c70371cc"
     },
     "R/server-admin_rise_support_types.R": {
-      "checksum": "21801d71ea8b2d02d71554310accf600"
+      "checksum": "32bf2e9b90dd05ba4f9df10bec0a3eb1"
     },
     "R/server-entity_page.R": {
-      "checksum": "8d8241fcdc5d2aa9bef5d7df0a92e543"
+      "checksum": "a772cec65de2c08d1ade51f058407f96"
     },
     "R/server-event_catalog_page.R": {
       "checksum": "04909284480c781beb96abca188064e3"
     },
     "R/server-event_instance_page.R": {
-      "checksum": "d81312685ec5d5f3bc8b882b849f45ec"
+      "checksum": "16e6785f70ee6e5ff5108ae80d7e4291"
     },
     "R/server-event_overview.R": {
-      "checksum": "a567762c70f4ead19105b5e93a653c45"
+      "checksum": "16b75804e4b64238424d4cfc151400d3"
     },
     "R/server-event_page.R": {
       "checksum": "7b130e6a7374118afcf20f50f575af80"
@@ -4745,10 +4799,10 @@
       "checksum": "9eb1cb0478479d84ea5ad959614b7d75"
     },
     "R/server-hub_overview.R": {
-      "checksum": "99b297fa93afafe8ab6e5d57d8b4f645"
+      "checksum": "53bfbd4f2c2fca29cb5b7c78a1888b3c"
     },
     "R/server-hub_support_page.R": {
-      "checksum": "e787e495abd5c62f0aa7978732588efd"
+      "checksum": "52239854051ac5ae8394e506c8335b88"
     },
     "R/server-quality_wrapper.R": {
       "checksum": "a073bf2e728755bd3dc62f8fa697b82e"
@@ -4778,7 +4832,7 @@
       "checksum": "af5c026ad4430817ecd9735275a943de"
     },
     "R/ui-hub_overview.R": {
-      "checksum": "8d21a4aaf2730717fee01cf324d003de"
+      "checksum": "a573d4cf95b9242bd062543ba88addbe"
     },
     "R/ui-hub_support_page.R": {
       "checksum": "610baffd33d0632affdc8aefa9ddf405"
@@ -4853,7 +4907,7 @@
       "checksum": "59066a7154514ca12f37072a06e84d6b"
     },
     "server.R": {
-      "checksum": "1b382db6d6e458364e6018a00ab283e3"
+      "checksum": "b21f732570dd2b4e6c702b49b1eb11a1"
     },
     "tests/testthat.R": {
       "checksum": "207024485a6d2e1472cab9200c3d851a"
