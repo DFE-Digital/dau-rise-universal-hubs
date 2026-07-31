@@ -414,9 +414,9 @@ server_hub_overview <- function(
         callback = DT::JS(
           sprintf(
             "table.on('dblclick', 'tr', function() {
-      var data = table.row(this).data();
-      if (data) Shiny.setInputValue('%s', data[0], {priority: 'event'});
-    });",
+              var data = table.row(this).data();
+              if (data) Shiny.setInputValue('%s', data[0], {priority: 'event'});
+            });",
             ns("blueprint_row_dblclicked")
           )
         )
@@ -445,7 +445,7 @@ server_hub_overview <- function(
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
       query <- glue::glue_sql(
-        "SELECT [ruhbf_id], [ruhbf_name], [ruhbf_description], [ruhbf_rule_type], [ruhbf_required] 
+        "SELECT [ruhbf_id], [ruhbf_name], [ruhbf_description], [ruhbf_dropdown_options], [ruhbf_rule_type], [ruhbf_required] 
          FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
          WHERE [ruhbf_id] = {blueprint_id};",
         .con = conn
@@ -454,9 +454,7 @@ server_hub_overview <- function(
       req(nrow(record) == 1)
 
       showModal(modalDialog(
-        title = paste(
-          "Modify Complete Blueprint Action Field Rule Configuration"
-        ),
+        title = "Modify Complete Blueprint Action Field Rule Configuration",
         size = "m",
         easyClose = TRUE,
         footer = tagList(
@@ -501,36 +499,23 @@ server_hub_overview <- function(
               "input['%s'] == 'Dropdown'",
               ns("edit_blueprint_type_input")
             ),
+            ns = ns,
             textAreaInput(
               inputId = ns("edit_blueprint_dropdown_options"),
               label = "Dropdown Menu Options (Comma-Separated):",
-              value = if (record$ruhbf_rule_type == "Dropdown") {
-                record$ruhbf_description
-              } else {
-                ""
-              },
+              value = record$ruhbf_dropdown_options %||% "",
               placeholder = "e.g., Red, Amber, Green",
               rows = 2
             )
           ),
           br(),
 
-          shiny::conditionalPanel(
-            condition = sprintf(
-              "input['%s'] != 'Dropdown'",
-              ns("edit_blueprint_type_input")
-            ),
-            textAreaInput(
-              inputId = ns("edit_blueprint_desc_input"),
-              label = "Form Input Guideline Note Hint Text Context:",
-              value = if (record$ruhbf_rule_type != "Dropdown") {
-                record$ruhbf_description
-              } else {
-                ""
-              },
-              rows = 2,
-              placeholder = "Optional guidance instructions..."
-            )
+          textAreaInput(
+            inputId = ns("edit_blueprint_desc_input"),
+            label = "Form Input Guideline Note Hint Text Context:",
+            value = record$ruhbf_description %||% "",
+            rows = 2,
+            placeholder = "Optional guidance instructions..."
           ),
 
           checkboxInput(
@@ -554,21 +539,15 @@ server_hub_overview <- function(
 
       removeModal()
 
-      final_description <- if (input$edit_blueprint_type_input == "Dropdown") {
-        req(input$edit_blueprint_dropdown_options)
-        trimws(input$edit_blueprint_dropdown_options)
-      } else {
-        input$edit_blueprint_desc_input
-      }
-
       query <- glue::glue_sql(
         "UPDATE {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
          SET 
            [ruhbf_name] = {input$edit_blueprint_name_input},
-           [ruhbf_description] = {final_description},
+           [ruhbf_description] = {NULLIF(input$edit_blueprint_desc_input, '')},
+           [ruhbf_dropdown_options] = {if(input$edit_blueprint_type_input == 'Dropdown') NULLIF(input$edit_blueprint_dropdown_options, '') else NA},
            [ruhbf_rule_type] = {input$edit_blueprint_type_input},
-           [ruhbf_required] = {if (input$edit_blueprint_req_input) 1 else 0},
-           [modified_date] = SYSUTCDATETIME(), -- Tracking audit timestamps
+           [ruhbf_required] = {as.integer(isTRUE(input$edit_blueprint_req_input))},
+           [modified_date] = SYSUTCDATETIME(),
            [modified_by] = {dauPortalTools::get_user(session)}
          WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
         .con = conn
@@ -688,6 +667,7 @@ server_hub_overview <- function(
 
           shiny::conditionalPanel(
             condition = sprintf("input['%s'] == 'Dropdown'", ns("field_type")),
+            ns = ns,
             textAreaInput(
               ns("field_dropdown_options"),
               "Dropdown Menu Options (Comma-Separated):",
@@ -719,25 +699,19 @@ server_hub_overview <- function(
 
       removeModal()
 
-      final_description <- if (input$field_type == "Dropdown") {
-        req(input$field_dropdown_options)
-        trimws(input$field_dropdown_options)
-      } else {
-        input$field_desc
-      }
-
       query <- glue::glue_sql(
         "
         INSERT INTO {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields] 
-        ([ruht_id], [ruhb_id], [ruhsc_id], [ruhbf_name], [ruhbf_description], [ruhbf_rule_type], [ruhbf_required], [ruhbf_active], [created_date], [created_by])
+        ([ruht_id], [ruhb_id], [ruhsc_id], [ruhbf_name], [ruhbf_description], [ruhbf_dropdown_options], [ruhbf_rule_type], [ruhbf_required], [ruhbf_active], [created_date], [created_by])
         VALUES (
           {as.integer(active_category_id())}, 
           {as.integer(selected_hub_id())}, 
-          0,                                 
+          0,                                   
           {input$field_name}, 
-          {final_description}, 
+          {NULLIF(input$field_desc, '')}, 
+          {if(input$field_type == 'Dropdown') NULLIF(input$field_dropdown_options, '') else NA}, 
           {input$field_type}, 
-          {if (input$field_req) 1 else 0}, 
+          {as.integer(isTRUE(input$field_req))}, 
           1, 
           SYSUTCDATETIME(), 
           {dauPortalTools::get_user(session)}
