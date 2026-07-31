@@ -539,17 +539,39 @@ server_hub_overview <- function(
 
       removeModal()
 
+      desc_val <- if (
+        is.null(input$edit_blueprint_desc_input) ||
+          !nzchar(trimws(input$edit_blueprint_desc_input))
+      ) {
+        NA
+      } else {
+        trimws(input$edit_blueprint_desc_input)
+      }
+
+      dropdown_val <- if (input$edit_blueprint_type_input == 'Dropdown') {
+        if (
+          is.null(input$edit_blueprint_dropdown_options) ||
+            !nzchar(trimws(input$edit_blueprint_dropdown_options))
+        ) {
+          NA
+        } else {
+          trimws(input$edit_blueprint_dropdown_options)
+        }
+      } else {
+        NA
+      }
+
       query <- glue::glue_sql(
         "UPDATE {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
-         SET 
-           [ruhbf_name] = {input$edit_blueprint_name_input},
-           [ruhbf_description] = {NULLIF(input$edit_blueprint_desc_input, '')},
-           [ruhbf_dropdown_options] = {if(input$edit_blueprint_type_input == 'Dropdown') NULLIF(input$edit_blueprint_dropdown_options, '') else NA},
-           [ruhbf_rule_type] = {input$edit_blueprint_type_input},
-           [ruhbf_required] = {as.integer(isTRUE(input$edit_blueprint_req_input))},
-           [modified_date] = SYSUTCDATETIME(),
-           [modified_by] = {dauPortalTools::get_user(session)}
-         WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
+   SET 
+     [ruhbf_name] = {input$edit_blueprint_name_input},
+     [ruhbf_description] = {desc_val},
+     [ruhbf_dropdown_options] = {dropdown_val},
+     [ruhbf_rule_type] = {input$edit_blueprint_type_input},
+     [ruhbf_required] = {as.integer(isTRUE(input$edit_blueprint_req_input))},
+     [modified_date] = SYSUTCDATETIME(),
+     [modified_by] = {dauPortalTools::get_user(session)}
+   WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
         .con = conn
       )
 
