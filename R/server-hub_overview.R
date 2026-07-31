@@ -388,8 +388,12 @@ server_hub_overview <- function(
       df <- DBI::dbGetQuery(conn, query)
 
       if (is.null(df) || nrow(df) == 0) {
-        return(data.frame(
-          "Status" = "No blueprint metric fields defined for this specific configuration state context yet."
+        return(DT::datatable(
+          data.frame(
+            Status = "No blueprint fields defined for this specific configuration yet."
+          ),
+          rownames = FALSE,
+          options = list(dom = 't')
         ))
       }
 
@@ -408,10 +412,13 @@ server_hub_overview <- function(
           columnDefs = list(list(visible = FALSE, targets = 0))
         ),
         callback = DT::JS(
-          "table.on('dblclick', 'tr', function() {
-            var data = table.row(this).data();
-            if (data) Shiny.setInputValue('hub_overview_module-blueprint_row_dblclicked', data[0], {priority: 'event'});
-          });"
+          sprintf(
+            "table.on('dblclick', 'tr', function() {
+      var data = table.row(this).data();
+      if (data) Shiny.setInputValue('%s', data[0], {priority: 'event'});
+    });",
+            ns("blueprint_row_dblclicked")
+          )
         )
       )
     })
@@ -472,13 +479,13 @@ server_hub_overview <- function(
 
           textInput(
             inputId = ns("edit_blueprint_name_input"),
-            label = "Input Action Field Presentational Label Title:",
+            label = "Action Title:",
             value = record$ruhbf_name
           ),
 
           selectInput(
             inputId = ns("edit_blueprint_type_input"),
-            label = "Storage Format Type Validation Rule:",
+            label = "Action Type:",
             choices = c(
               "Text / String Input" = "Character",
               "Numeric Integer" = "Integer",
