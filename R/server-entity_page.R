@@ -19,7 +19,7 @@ server_entity_page <- function(
     hubs_list_proxy <- DT::dataTableProxy("hubs_list", session)
     support_given_proxy <- DT::dataTableProxy("support_given", session)
 
-    current_user <- dauPortalTools::get_user(session)
+    current_user <- dauPortalTools::db_user_create(session)
     refresh_log <- reactiveVal(0)
     refresh_hubs_trigger <- reactiveVal(0)
     refresh_leads_trigger <- reactiveVal(0)

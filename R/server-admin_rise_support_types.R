@@ -51,7 +51,7 @@ server_rise_support_types_admin <- function(id) {
         name = input$edit_name,
         description = input$edit_desc,
         hub_id = as.integer(input$edit_hub_id),
-        user_id = dauPortalTools::get_user(session)
+        user_id = dauPortalTools::db_user_create(session)
       )
 
       removeModal()
@@ -65,13 +65,11 @@ server_rise_support_types_admin <- function(id) {
     })
 
     observeEvent(input$save_new, {
-      req(input$add_name)
-
       db_ruh_add_support_type(
         hub_id = as.integer(input$add_hub_id),
         name = input$add_name,
         description = input$add_desc,
-        user_id = dauPortalTools::get_user(session)
+        user_id = dauPortalTools::db_user_create(session)
       )
 
       removeModal()

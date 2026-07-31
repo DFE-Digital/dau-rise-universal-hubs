@@ -96,7 +96,7 @@ server_hub_overview <- function(
       dauPortalTools::db_ruh_update_hub(
         hub_id = selected_hub_id(),
         hub_name = input$hub_name_edit,
-        user_id = dauPortalTools::get_user(session)
+        user_id = dauPortalTools::db_user_create(session)
       )
       showNotification(
         "Hub metadata name record committed safely.",
@@ -587,7 +587,7 @@ server_hub_overview <- function(
            [ruhbf_rule_type] = {input$edit_blueprint_type_input},
            [ruhbf_required] = {as.integer(isTRUE(input$edit_blueprint_req_input))},
            [modified_date] = SYSUTCDATETIME(),
-           [modified_by] = {dauPortalTools::get_user(session)}
+           [modified_by] = {dauPortalTools::db_user_create(session)}
          WHERE [ruhbf_id] = {as.integer(input$edit_blueprint_id_hidden)};",
         .con = conn
       )
@@ -648,7 +648,7 @@ server_hub_overview <- function(
 
     observeEvent(input$save_type, {
       req(input$type_name, selected_hub_id())
-      user_id <- dauPortalTools::get_user(session)
+      user_id <- dauPortalTools::db_user_create(session)
       if (is.null(editing_type_id())) {
         dauPortalTools::db_ruh_add_support_type(
           selected_hub_id(),
@@ -777,7 +777,7 @@ server_hub_overview <- function(
           {as.integer(isTRUE(input$field_req))}, 
           1, 
           SYSUTCDATETIME(), 
-          {dauPortalTools::get_user(session)}
+          {dauPortalTools::db_user_create(session)}
         );
         ",
         .con = conn
