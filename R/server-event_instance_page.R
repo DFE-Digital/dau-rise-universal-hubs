@@ -304,15 +304,15 @@ server_event_instance_page <- function(id, selected_event_id, active_target) {
       options = list(pageLength = 10, dom = "tp"),
       callback = DT::JS(paste0(
         "
-         table.on('dblclick', 'tr', function() {
-           var data = table.row(this).data();
-           if (data && data[0] !== 'No structured action metrics entries are compiled for this entity timeline layout frame yet.') { 
-             Shiny.setInputValue('",
+          table.on('dblclick', 'tr', function() {
+            var data = table.row(this).data();
+            if (data && data[0] !== 'No structured action metrics entries are compiled for this entity timeline layout frame yet.') { 
+              Shiny.setInputValue('",
         ns("action_row_dblclicked"),
         "', data[0], {priority: 'event'});
-           }
-         });
-         "
+            }
+          });
+          "
       ))
     )
 
@@ -439,7 +439,7 @@ server_event_instance_page <- function(id, selected_event_id, active_target) {
       avail_actions <- DBI::dbGetQuery(
         conn,
         glue::glue_sql(
-          "SELECT [rueva_id], [rueva_name], [rueva_rule_type], [rueva_description]
+          "SELECT [rueva_id], [rueva_name], [rueva_rule_type], [rueva_description], [rueva_dropdown_options]
            FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_actions]
            WHERE [ruevt_id] = {as.integer(ev$ruevt_id)}
              AND [rueva_id] NOT IN (
@@ -491,7 +491,7 @@ server_event_instance_page <- function(id, selected_event_id, active_target) {
       action_meta <- DBI::dbGetQuery(
         conn,
         glue::glue_sql(
-          "SELECT [rueva_rule_type], [rueva_description] FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_actions] WHERE [rueva_id] = {as.integer(input$new_action_param_id)};",
+          "SELECT [rueva_rule_type], [rueva_description], [rueva_dropdown_options] FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_actions] WHERE [rueva_id] = {as.integer(input$new_action_param_id)};",
           .con = conn
         )
       )
@@ -519,7 +519,10 @@ server_event_instance_page <- function(id, selected_event_id, active_target) {
           value = FALSE
         )
       } else if (identical(rule_type, "Dropdown")) {
-        choices_arr <- trimws(strsplit(action_meta$rueva_description[1], ",")[[
+        choices_arr <- trimws(strsplit(
+          action_meta$rueva_dropdown_options[1] %||% "",
+          ","
+        )[[
           1
         ]])
         selectInput(
@@ -591,7 +594,7 @@ server_event_instance_page <- function(id, selected_event_id, active_target) {
       resp_row <- DBI::dbGetQuery(
         conn,
         glue::glue_sql(
-          "SELECT r.[ruevar_id], r.[ruevar_value], a.[rueva_name], a.[rueva_rule_type], a.[rueva_description]
+          "SELECT r.[ruevar_id], r.[ruevar_value], a.[rueva_name], a.[rueva_rule_type], a.[rueva_description], a.[rueva_dropdown_options]
            FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_action_responses] r
            INNER JOIN {utils_resolve_schema('db_schema_01r')}.[ru_event_actions] a ON r.[rueva_id] = a.[rueva_id]
            WHERE r.[ruevar_id] = {resp_id};",
@@ -663,7 +666,7 @@ server_event_instance_page <- function(id, selected_event_id, active_target) {
                 )
               } else if (identical(rule_type, "Dropdown")) {
                 parsed_choices <- trimws(strsplit(
-                  resp_row$rueva_description[1],
+                  resp_row$rueva_dropdown_options[1] %||% "",
                   ","
                 )[[1]])
                 selectInput(
