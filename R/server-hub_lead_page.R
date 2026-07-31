@@ -8,7 +8,7 @@ server_hub_lead_page <- function(id, selected_lead_id, active_target) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    current_user <- dauPortalTools::get_user(session)
+    current_user <- dauPortalTools::db_user_create(get_user(session))
 
     refresh_cohorts <- reactiveVal(0)
     refresh_records <- reactiveVal(0)

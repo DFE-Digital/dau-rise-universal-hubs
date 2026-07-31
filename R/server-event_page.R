@@ -5,7 +5,7 @@ server_event_page <- function(id, active_target) {
     ns <- session$ns
 
     refresh_events_trigger <- reactiveVal(0)
-    current_user <- dauPortalTools::get_user(session)
+    current_user <- dauPortalTools::db_user_create(get_user(session))
 
     output$event_history_pivoted <- DT::renderDT({
       refresh_events_trigger()

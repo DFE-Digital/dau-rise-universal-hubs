@@ -7,7 +7,7 @@
 server_event_instance_page <- function(id, selected_event_id, active_target) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    current_user <- dauPortalTools::get_user(session)
+    current_user <- dauPortalTools::db_user_create(get_user(session))
 
     refresh_event_master <- reactiveVal(0)
     refresh_sub_actions <- reactiveVal(0)
