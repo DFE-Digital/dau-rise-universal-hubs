@@ -50,7 +50,7 @@ server_entity_page <- function(
           ),
           p(
             class = "govuk-body",
-            "The targeted operational entity layer type is unrecognized."
+            "The targeted entity is unrecognized."
           )
         )
       }
@@ -152,7 +152,7 @@ server_entity_page <- function(
 
       showModal(modalDialog(
         title = glue::glue(
-          "Log New Support Provision for {active_target$type}"
+          "Log New Hub Support for {active_target$type}"
         ),
         size = "l",
         easyClose = FALSE,
@@ -160,7 +160,7 @@ server_entity_page <- function(
           modalButton("Cancel"),
           actionButton(
             ns("submit_support_record"),
-            "Save Assignment Track",
+            "Save Record",
             class = "btn-success"
           )
         ),
@@ -170,7 +170,7 @@ server_entity_page <- function(
               6,
               selectInput(
                 ns("modal_sup_hub_id"),
-                "Select Associated Hub Matrix:",
+                "Select Associated Hub:",
                 choices = hubs_choices
               )
             ),
@@ -178,7 +178,7 @@ server_entity_page <- function(
               6,
               selectInput(
                 ns("modal_sup_framework_id"),
-                "Select Support Framework Sub-Category:",
+                "Select Support/Cohort:",
                 choices = character(0)
               )
             )
@@ -189,7 +189,7 @@ server_entity_page <- function(
               6,
               ui_date_input(
                 ns("modal_sup_date_start"),
-                "Date Support Framework Started:",
+                "Date Support Started:",
                 value = Sys.Date()
               )
             ),
@@ -197,7 +197,7 @@ server_entity_page <- function(
               6,
               textAreaInput(
                 ns("modal_sup_comment"),
-                "Comments / Initial Operational Context:",
+                "Notes:",
                 rows = 2
               )
             )
@@ -220,7 +220,7 @@ server_entity_page <- function(
         conn,
         glue::glue_sql(
           "
-          SELECT [ruhbf_id], [ruhbf_name], [ruhbf_description], [ruhbf_rule_type], [ruhbf_required], [ruht_id]
+          SELECT [ruhbf_id], [ruhbf_name], [ruhbf_description], [ruhbf_dropdown_options], [ruhbf_rule_type], [ruhbf_required], [ruht_id]
           FROM {utils_resolve_schema('db_schema_01r')}.[ruh_blueprint_fields]
           WHERE [ruhbf_active] = 1 
             AND ([ruht_id] = {fw_id} OR ([ruht_id] = 0 AND [ruhb_id] = {as.integer(input$modal_sup_hub_id)}));
@@ -231,7 +231,7 @@ server_entity_page <- function(
 
       if (is.null(fields_df) || nrow(fields_df) == 0) {
         return(p(em(
-          "No dynamic action metrics are blueprinted for this specific framework pathway segment."
+          "No actions for this specific framework."
         )))
       }
 
@@ -257,6 +257,16 @@ server_entity_page <- function(
           "</small>"
         ))
 
+        # Append guideline description hint text below label if present
+        if (nzchar(row$ruhbf_description %||% "")) {
+          label_text <- HTML(paste0(
+            label_text,
+            "<br><small class='text-muted'>",
+            row$ruhbf_description,
+            "</small>"
+          ))
+        }
+
         if (
           identical(row$ruhbf_rule_type, "Integer") ||
             identical(row$ruhbf_rule_type, "Numeric")
@@ -267,7 +277,10 @@ server_entity_page <- function(
         } else if (identical(row$ruhbf_rule_type, "Boolean")) {
           checkboxInput(ns(input_id), label = label_text, value = FALSE)
         } else if (identical(row$ruhbf_rule_type, "Dropdown")) {
-          parsed_choices <- trimws(strsplit(row$ruhbf_description, ",")[[1]])
+          parsed_choices <- trimws(strsplit(
+            row$ruhbf_dropdown_options %||% "",
+            ","
+          )[[1]])
           selectInput(
             ns(input_id),
             label = label_text,
@@ -309,7 +322,7 @@ server_entity_page <- function(
       clean_date <- input_to_date("modal_sup_date_start", input)
       if (is.na(clean_date)) {
         showNotification(
-          "Invalid Date selection format. Please verify day/month values.",
+          "Invalid Date format. Please verify day/month values.",
           type = "error"
         )
         return()
@@ -390,7 +403,7 @@ server_entity_page <- function(
 
       refresh_hubs_trigger(refresh_hubs_trigger() + 1)
       showNotification(
-        "Support tracking provision contract registered with initial metrics successfully.",
+        "Support registered successfully.",
         type = "message"
       )
     })
@@ -452,7 +465,7 @@ server_entity_page <- function(
 
       showModal(modalDialog(
         title = glue::glue(
-          "Log New Interaction Event for {active_target$type}"
+          "Log New Event for {active_target$type}"
         ),
         size = "l",
         easyClose = FALSE,
@@ -460,7 +473,7 @@ server_entity_page <- function(
           modalButton("Cancel"),
           actionButton(
             ns("save_new_dynamic_event"),
-            "Save Interaction Event Log",
+            "Save Event",
             class = "btn-success"
           )
         ),
@@ -470,7 +483,7 @@ server_entity_page <- function(
               6,
               selectInput(
                 ns("modal_evt_type_id"),
-                "Primary Interaction Method Classification:",
+                "Event type:",
                 choices = setNames(types_df$ruevt_id, types_df$ruevt_name)
               )
             ),
@@ -489,7 +502,7 @@ server_entity_page <- function(
               6,
               dateInput(
                 ns("modal_evt_date"),
-                "Interaction Event Date:",
+                "Event Date:",
                 value = Sys.Date()
               )
             ),
@@ -497,7 +510,7 @@ server_entity_page <- function(
               6,
               textAreaInput(
                 ns("modal_evt_notes"),
-                "Top-level Summary Notes:",
+                "Notes:",
                 rows = 2
               )
             )
