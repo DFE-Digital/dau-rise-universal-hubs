@@ -549,12 +549,21 @@ server_entity_page <- function(
       } else {
         as.integer(input$modal_evt_sub_id)
       }
-      fields_df <- dauPortalTools::db_ru_get_event_actions(
-        ruevt_id = as.integer(input$modal_evt_type_id),
-        ruesv_id = sub_id
+
+      conn <- dauPortalTools::sql_manager("dit")
+      on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
+
+      fields_df <- DBI::dbGetQuery(
+        conn,
+        glue::glue_sql(
+          "SELECT [rueva_id], [rueva_name], [rueva_description], [rueva_dropdown_options], [rueva_rule_type], [rueva_required] 
+           FROM {utils_resolve_schema('db_schema_01r')}.[ru_event_actions]
+           WHERE [ruevt_id] = {as.integer(input$modal_evt_type_id)} AND ([ruesv_id] = {sub_id} OR [ruesv_id] = 0);",
+          .con = conn
+        )
       )
 
-      if (nrow(fields_df) == 0) {
+      if (is.null(fields_df) || nrow(fields_df) == 0) {
         return(p(em(
           "No additional dynamic form metric inputs are required for this specific validation context block."
         )))
@@ -573,14 +582,12 @@ server_entity_page <- function(
         }
 
         if (nzchar(row$rueva_description %||% "")) {
-          if (row$rueva_rule_type != "Dropdown") {
-            label_text <- HTML(paste0(
-              label_text,
-              "<br><small class='text-muted'>",
-              row$rueva_description,
-              "</small>"
-            ))
-          }
+          label_text <- HTML(paste0(
+            label_text,
+            "<br><small class='text-muted'>",
+            row$rueva_description,
+            "</small>"
+          ))
         }
 
         if (
@@ -593,7 +600,10 @@ server_entity_page <- function(
         } else if (identical(row$rueva_rule_type, "Boolean")) {
           checkboxInput(ns(input_id), label = label_text, value = FALSE)
         } else if (identical(row$rueva_rule_type, "Dropdown")) {
-          parsed_choices <- trimws(strsplit(row$rueva_description, ",")[[1]])
+          parsed_choices <- trimws(strsplit(
+            row$rueva_dropdown_options %||% "",
+            ","
+          )[[1]])
           selectInput(
             ns(input_id),
             label = label_text,
