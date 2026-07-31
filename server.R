@@ -9,7 +9,7 @@ server <- function(input, output, session) {
   observeEvent(
     TRUE,
     {
-      u <- dauPortalTools::get_user(session)
+      u <- dauPortalTools::db_user_create(get_user(session))
       user(u)
 
       r <- tryCatch(
@@ -287,6 +287,7 @@ server <- function(input, output, session) {
     selected_support_id = selected_support_id,
     active_target = active_target
   )
+
   observeEvent(support_page_server$go_back(), {
     req(support_page_server$go_back() > 0)
     updateNavbarPage(session, "main_navbar", selected = "school_overview")
@@ -426,7 +427,7 @@ server <- function(input, output, session) {
       {
         dauPortalTools::db_ruh_add_hub(
           hub_name = input$new_hub_name_input,
-          user_id = dauPortalTools::get_user(session)
+          user_id = dauPortalTools::db_user_create(session)
         )
       },
       error = function(e) {

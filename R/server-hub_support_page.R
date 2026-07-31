@@ -8,7 +8,7 @@ server_hub_support_page <- function(id, selected_support_id, active_target) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    current_user <- dauPortalTools::db_user_create(session)
+    current_user <- dauPortalTools::db_user_create(get_user(session))
 
     refresh_contract_master <- reactiveVal(0)
     refresh_timeline_actions <- reactiveVal(0)

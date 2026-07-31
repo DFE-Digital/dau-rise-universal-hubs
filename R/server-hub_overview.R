@@ -96,7 +96,7 @@ server_hub_overview <- function(
       dauPortalTools::db_ruh_update_hub(
         hub_id = selected_hub_id(),
         hub_name = input$hub_name_edit,
-        user_id = dauPortalTools::db_user_create(session)
+        user_id = dauPortalTools::db_user_create(get_user(session))
       )
       showNotification(
         "Hub metadata name record committed safely.",
@@ -777,7 +777,7 @@ server_hub_overview <- function(
           {as.integer(isTRUE(input$field_req))}, 
           1, 
           SYSUTCDATETIME(), 
-          {dauPortalTools::db_user_create(session)}
+          {dauPortalTools::db_user_create(get_user(session))}
         );
         ",
         .con = conn
