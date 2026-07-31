@@ -56,7 +56,7 @@ server_rise_actions_admin <- function(id) {
       df_types <- db_ruh_get_support_types(hub_id = NULL) |>
         dplyr::filter(ruhb_id == 0 | ruhb_id == chosen_hub)
 
-      choices_vector := setNames(df_types$ruht_id, df_types$ruht_name)
+      choices_vector <- setNames(df_types$ruht_id, df_types$ruht_name)
 
       current_saved_type <- editing_row_cache()$ruht_id
       fallback_selection <- if (current_saved_type %in% choices_vector) {
