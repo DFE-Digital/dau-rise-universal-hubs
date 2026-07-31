@@ -378,7 +378,7 @@ server_event_overview <- function(
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
 
       query <- glue::glue_sql(
-        "SELECT [rueva_id], [rueva_name], [rueva_description], [rueva_rule_type], [rueva_required] 
+        "SELECT [rueva_id], [rueva_name], [rueva_description], [rueva_dropdown_options], [rueva_rule_type], [rueva_required] 
          FROM {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ru_event_actions]
          WHERE [rueva_id] = {blueprint_id};",
         .con = conn
@@ -429,34 +429,22 @@ server_event_overview <- function(
               "input['%s'] == 'Dropdown'",
               ns("edit_event_blueprint_type_input")
             ),
+            ns = ns,
             textAreaInput(
               ns("edit_event_blueprint_dropdown_options"),
               "Dropdown Menu Options (Comma-Separated):",
-              value = if (record$rueva_rule_type == "Dropdown") {
-                record$rueva_description
-              } else {
-                ""
-              },
+              value = record$rueva_dropdown_options %||% "",
               placeholder = "e.g., Attended, Apologies",
               rows = 2
             )
           ),
           br(),
-          shiny::conditionalPanel(
-            condition = sprintf(
-              "input['%s'] != 'Dropdown'",
-              ns("edit_event_blueprint_type_input")
-            ),
-            textAreaInput(
-              ns("edit_event_blueprint_desc_input"),
-              "Form Input Guideline Note Hint Text Context:",
-              value = if (record$rueva_rule_type != "Dropdown") {
-                record$rueva_description
-              } else {
-                ""
-              },
-              rows = 2
-            )
+          textAreaInput(
+            ns("edit_event_blueprint_desc_input"),
+            "Form Input Guideline Note Hint Text Context:",
+            value = record$rueva_description %||% "",
+            rows = 2,
+            placeholder = "Optional guidance instructions..."
           ),
           checkboxInput(
             ns("edit_event_blueprint_req_input"),
@@ -477,18 +465,14 @@ server_event_overview <- function(
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
       removeModal()
 
-      final_description <- if (
-        input$edit_event_blueprint_type_input == "Dropdown"
-      ) {
-        req(input$edit_event_blueprint_dropdown_options)
-        trimws(input$edit_event_blueprint_dropdown_options)
-      } else {
-        input$edit_event_blueprint_desc_input
-      }
-
       query <- glue::glue_sql(
         "UPDATE {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ru_event_actions]
-         SET [rueva_name] = {input$edit_event_blueprint_name_input}, [rueva_description] = {final_description}, [rueva_rule_type] = {input$edit_event_blueprint_type_input}, [rueva_required] = {if (input$edit_event_blueprint_req_input) 1 else 0}
+         SET 
+           [rueva_name] = {input$edit_event_blueprint_name_input},
+           [rueva_description] = {NULLIF(input$edit_event_blueprint_desc_input, '')},
+           [rueva_dropdown_options] = {if(input$edit_event_blueprint_type_input == 'Dropdown') NULLIF(input$edit_event_blueprint_dropdown_options, '') else NA},
+           [rueva_rule_type] = {input$edit_event_blueprint_type_input},
+           [rueva_required] = {as.integer(isTRUE(input$edit_event_blueprint_req_input))}
          WHERE [rueva_id] = {as.integer(input$edit_event_blueprint_id_hidden)};",
         .con = conn
       )
@@ -599,6 +583,7 @@ server_event_overview <- function(
           ),
           shiny::conditionalPanel(
             condition = sprintf("input['%s'] == 'Dropdown'", ns("field_type")),
+            ns = ns,
             textAreaInput(
               ns("field_dropdown_options"),
               "Dropdown Menu Options (Comma-Separated):",
@@ -610,7 +595,8 @@ server_event_overview <- function(
           textAreaInput(
             ns("field_desc"),
             "Form Input Guideline Note Hint Text Context:",
-            rows = 2
+            rows = 2,
+            placeholder = "Optional guidance instructions..."
           ),
           checkboxInput(
             ns("field_req"),
@@ -627,17 +613,18 @@ server_event_overview <- function(
       on.exit(try(DBI::dbDisconnect(conn), silent = TRUE), add = TRUE)
       removeModal()
 
-      final_description <- if (input$field_type == "Dropdown") {
-        req(input$field_dropdown_options)
-        trimws(input$field_dropdown_options)
-      } else {
-        input$field_desc
-      }
-
       query <- glue::glue_sql(
         "INSERT INTO {dauPortalTools::utils_resolve_schema('db_schema_01r')}.[ru_event_actions] 
-         ([ruevt_id], [ruesv_id], [rueva_name], [rueva_description], [rueva_rule_type], [rueva_required])
-         VALUES ({as.integer(selected_event_master_id())}, {as.integer(active_category_id())}, {input$field_name}, {final_description}, {input$field_type}, {if (input$field_req) 1 else 0});",
+         ([ruevt_id], [ruesv_id], [rueva_name], [rueva_description], [rueva_dropdown_options], [rueva_rule_type], [rueva_required])
+         VALUES (
+           {as.integer(selected_event_master_id())}, 
+           {as.integer(active_category_id())}, 
+           {input$field_name}, 
+           {NULLIF(input$field_desc, '')}, 
+           {if(input$field_type == 'Dropdown') NULLIF(input$field_dropdown_options, '') else NA}, 
+           {input$field_type}, 
+           {as.integer(isTRUE(input$field_req))}
+         );",
         .con = conn
       )
       DBI::dbExecute(conn, query)
