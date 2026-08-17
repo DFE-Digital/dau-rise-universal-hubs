@@ -92,7 +92,7 @@ server_event_catalog_page <- function(
       dauPortalTools::db_ru_add_event_type(
         name = input$modal_name,
         description = input$modal_desc,
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       showNotification(

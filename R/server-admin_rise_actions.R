@@ -115,7 +115,7 @@ server_rise_actions_admin <- function(id) {
         ruht_id = as.integer(input$edit_type),
         action_name = input$edit_name,
         description = input$edit_desc,
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       removeModal()
@@ -140,7 +140,7 @@ server_rise_actions_admin <- function(id) {
         ruht_id = as.integer(input$add_type),
         action_name = input$add_name,
         description = input$add_desc,
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       removeModal()

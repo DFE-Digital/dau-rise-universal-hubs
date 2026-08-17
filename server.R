@@ -4,13 +4,19 @@ server <- function(input, output, session) {
   # =================================================================================
 
   user <- reactiveVal(NULL)
+  user_id <- reactiveVal(NULL)
   user_role <- reactiveVal(NULL)
 
   observeEvent(
     TRUE,
     {
-      u <- dauPortalTools::db_user_create(get_user(session))
+      dauPortalTools::db_user_create(get_user(session))
+
+      u <- get_user(session)
       user(u)
+
+      i <- dauPortalTools::get_user_id(u)
+      user_id(i)
 
       r <- tryCatch(
         dauPortalTools::get_user_role(u),
@@ -18,7 +24,7 @@ server <- function(input, output, session) {
       )
       user_role(r)
 
-      dauPortalTools::db_record_login(u)
+      dauPortalTools::db_record_login(i)
     },
     once = TRUE
   )

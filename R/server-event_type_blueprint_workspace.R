@@ -108,7 +108,7 @@ server_event_type_blueprint_workspace <- function(
         ruevt_id = as.integer(global_selected_event_type_id()),
         name = input$edit_parent_name,
         description = trimws(input$edit_parent_desc),
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       showNotification(
@@ -246,7 +246,7 @@ server_event_type_blueprint_workspace <- function(
         ruevt_id = as.integer(global_selected_event_type_id()),
         name = input$sub_name,
         description = trimws(input$sub_desc),
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       showNotification(
@@ -388,7 +388,7 @@ server_event_type_blueprint_workspace <- function(
         rule_type = input$field_type,
         is_required = if (input$field_req) 1 else 0,
         ruesv_id = chosen_scope_id,
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       showNotification(

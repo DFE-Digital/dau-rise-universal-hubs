@@ -131,7 +131,7 @@ server_event_overview <- function(
         ruevt_id = as.integer(selected_event_master_id()),
         name = input$edit_parent_name,
         description = trimws(input$edit_parent_desc),
-        user_id = dauPortalTools::db_user_create(get_user(session))
+        user_id = dauPortalTools::get_user_id(get_user(session))
       )
 
       showNotification(
